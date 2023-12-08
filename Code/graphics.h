@@ -11,6 +11,7 @@ using namespace std;
 #include "object.h"
 #include "sphere.h"
 #include "mesh.h"
+#include "light.h"
 
 #define numVBOs 2;
 #define numIBs 2;
@@ -43,9 +44,10 @@ class Graphics
     GLint m_projectionMatrix;
     GLint m_viewMatrix;
     GLint m_modelMatrix;
+    GLint m_normalMatrix;
+
     GLint m_positionAttrib;
     GLint m_normAttrib;
-
     GLint m_tcAttrib;
     GLint m_hasTexture;
     GLint m_colorAttrib;
@@ -57,6 +59,8 @@ class Graphics
     Sphere* m_sphere;
     Sphere* m_sphere2;
     Sphere* m_sphere3;
+
+    Light* m_light;
 
     Mesh* m_mesh;
 

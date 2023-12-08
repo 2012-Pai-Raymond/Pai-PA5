@@ -32,7 +32,6 @@ bool Graphics::Initialize(int width, int height)
 #endif
 
 
-
 	// Init Camera
 	m_camera = new Camera();
 	if (!m_camera->Initialize(width, height))
@@ -41,6 +40,13 @@ bool Graphics::Initialize(int width, int height)
 		return false;
 	}
 
+	//m_light = new Light(m_camera->GetView(), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+	m_light = new Light(m_camera->GetView(), 
+		glm::vec4(1.f, 1.f, 1.f, 1.0f), //light ambient
+		glm::vec4(5.1f, 5.1f, 5.1f, 1.f), //light diffusion 
+		glm::vec4(0.1f, 0.1f, 0.1f, 1.f), //light specular
+		glm::vec4(0.1f, 0.1f, 0.1f, 1.f) //globalambient
+	);
 	// Set up the shaders
 	m_shader = new Shader();
 	if (!m_shader->Initialize())
@@ -79,10 +85,10 @@ bool Graphics::Initialize(int width, int height)
 	m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
 
 	// The Sun
-	m_sphere = new Sphere(64, ".\\assets\\2k_sun.jpg");
-
+	m_sphere = new Sphere(64, ".\\assets\\2k_sun.jpg", ".\\assets\\2k_sun-n.jpg");
+	m_sphere->invertNormals();
 	// The Earth
-	m_sphere2 = new Sphere(48, ".\\assets\\2k_earth_daymap.jpg", ".\\assets\\11273-normal.jpg");
+	m_sphere2 = new Sphere(48, ".\\assets\\2k_earth_daymap.jpg", ".\\assets\\2k_earth_daymap-n.jpg");
 	
 	// The moon
 	//m_sphere3 = new Sphere(48, ".\\assets\\2k_moon.jpg");
@@ -190,6 +196,12 @@ void Graphics::Render()
 	// Send in the projection and view to the shader (stay the same while camera intrinsic(perspective) and extrinsic (view) parameters are the same
 	glUniformMatrix4fv(m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection()));
 	glUniformMatrix4fv(m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView()));
+	
+	
+	//glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere->GetModel()));
+
+	
+	//glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere2->GetModel()));
 
 	// Render the objects
 	/*if (m_cube != NULL){
@@ -209,8 +221,8 @@ void Graphics::Render()
 				printf("Sampler Not found not found\n");
 			}
 			glUniform1i(sampler, 0);
-			m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
-			//m_mesh->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
+			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
+			m_mesh->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
 		}
 	}
 
@@ -219,8 +231,9 @@ void Graphics::Render()
 		m_pyramid->Render(m_positionAttrib, m_colorAttrib);
 	}*/
 
-	
+	GLuint hasN = m_shader->GetUniformLocation("hasNormMap");
 	if (m_sphere != NULL) {
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_sphere->GetModel())))));
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere->GetModel()));
 		if (m_sphere->hasTex) {
 			glActiveTexture(GL_TEXTURE0);
@@ -230,7 +243,9 @@ void Graphics::Render()
 			{
 				printf("Sampler Not found not found\n");
 			}
+			glUseProgram(m_shader->GetShaderProgram());
 			glUniform1i(sampler, 0);
+			glUniform1i(hasN, false);
 		}
 		if (m_sphere->hasTexNorm) {
 			glActiveTexture(GL_TEXTURE1);
@@ -240,14 +255,16 @@ void Graphics::Render()
 			{
 				printf("Sampler Not found not found\n");
 			}
-			glUniform1i(sampler, 0);
+			glUniform1i(sampler, 1);
+			glUniform1i(hasN, true);
 		}
-		m_sphere->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
-		//m_sphere->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
+		//m_sphere->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
+		m_sphere->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
 	}
 	
 	
 	if (m_sphere2 != NULL) {
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_sphere2->GetModel())))));
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere2->GetModel()));
 		if (m_sphere2->hasTex) {
 			glActiveTexture(GL_TEXTURE0);
@@ -257,9 +274,23 @@ void Graphics::Render()
 			{
 				printf("Sampler Not found not found\n");
 			}
+			glUseProgram(m_shader->GetShaderProgram());
 			glUniform1i(sampler, 0);
-			m_sphere2->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
+			glUniform1i(hasN, false);
 		}
+		if (m_sphere2->hasTexNorm) {
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, m_sphere->getTexNormalID());
+			GLuint sampler = m_shader->GetUniformLocation("sp1");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 1);
+			glUniform1i(hasN, true);
+		}
+		m_sphere2->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
 	}
 
 	/*
@@ -316,6 +347,14 @@ bool Graphics::collectShPrLocs() {
 		anyProblem = false;
 	}
 
+	//Locate the normal Matrix in shader
+	m_normalMatrix = m_shader->GetUniformLocation("normMatrix");
+	if (m_normalMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_normalMatrix not found\n");
+		anyProblem = false;
+	}
+
 	// Locate the position vertex attribute
 	m_positionAttrib = m_shader->GetAttribLocation("v_position");
 	if (m_positionAttrib == -1)
@@ -325,7 +364,6 @@ bool Graphics::collectShPrLocs() {
 	}
 
 	
-	/*
 	// Locate the normal vertex attribute
 	m_normAttrib = m_shader->GetAttribLocation("v_normal");
 	if (m_normAttrib == -1)
@@ -333,17 +371,17 @@ bool Graphics::collectShPrLocs() {
 		printf("v_normal attribute not found\n");
 		anyProblem = false;
 	}
-	*/
 
 	
 	// Locate the color vertex attribute
+	/*
 	m_colorAttrib = m_shader->GetAttribLocation("v_color");
 	if (m_colorAttrib == -1)
 	{
 		printf("v_color attribute not found\n");
 		anyProblem = false;
 	}
-	
+	*/
 	
 	// Locate the color vertex attribute
 	m_tcAttrib = m_shader->GetAttribLocation("v_tc");
@@ -368,9 +406,63 @@ bool Graphics::collectShPrLocs() {
 
 	m_hasTexNorm = m_shader->GetUniformLocation("hasNormalMap");
 	if (m_hasTexture == INVALID_UNIFORM_LOCATION) {
-		printf("hasTexture uniform not found\n");
+		printf("hasNormalMap uniform not found\n");
 		anyProblem = false;
 	}
+
+	GLuint globalAmbLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "GlobalAmbient");
+	if (globalAmbLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("globalAmbient element not found\n");
+		anyProblem = false;
+	}
+	glProgramUniform4fv(m_shader->GetShaderProgram(), globalAmbLoc, 1, glm::value_ptr(m_light->m_globalAmbient));
+	
+	GLuint lightAloc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.ambient");
+	if (lightAloc == INVALID_UNIFORM_LOCATION) 
+	{
+		printf("Shader LightAmbient element not found\n");
+		anyProblem = false;
+	}
+	glProgramUniform4fv(m_shader->GetShaderProgram(), lightAloc, 1, glm::value_ptr(m_light->m_lightAmbient));
+
+	GLuint lightDLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.diffuse");
+	if (lightDLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("Shader lightDloc element not found\n");
+		anyProblem = false;
+	}
+	glProgramUniform4fv(m_shader->GetShaderProgram(), lightDLoc, 1, glm::value_ptr(m_light->m_lightDiffuse));
+
+	GLuint lightSLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.spec");
+	if (lightSLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("Shader lightSloc element not found\n");
+		anyProblem = false;
+	}
+	glProgramUniform4fv(m_shader->GetShaderProgram(), lightSLoc, 1, glm::value_ptr(m_light->m_lightSpecular));
+
+
+	GLuint lightPosLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.position");
+	glProgramUniform3fv(m_shader->GetShaderProgram(), lightPosLoc, 1, glm::value_ptr(m_light->m_lightPositionViewSpace));
+
+	float matAmbient[4] = { 0.3, 0.3, 0.3, 0.3 };
+	float matDiff[4] = { 1.0, 1., 1., 1.0 };
+	float matSpec[4] = { 0.5, 0.5, 0.5, 1.0 };
+	float matShininess = 1.;
+
+	GLuint mAmbLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "material.ambient");
+	glProgramUniform4fv(m_shader->GetShaderProgram(), mAmbLoc, 1, matAmbient);
+
+	GLuint mDiffLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "material.diffuse");
+	glProgramUniform4fv(m_shader->GetShaderProgram(), mDiffLoc, 1, matDiff);
+
+	GLuint mSpecLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "material.spec");
+	glProgramUniform4fv(m_shader->GetShaderProgram(), mSpecLoc, 1, matSpec);
+
+	GLuint mShineLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "material.shininess");
+	glProgramUniform1f(m_shader->GetShaderProgram(), mShineLoc, matShininess);
+
 
 	return anyProblem;
 }

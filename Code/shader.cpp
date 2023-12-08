@@ -61,8 +61,8 @@ bool Shader::AddShader(GLenum ShaderType)
               uniform Material material;\
               \
               layout (location = 0) in vec3 v_position; \
-              layout (location = 1) in vec3 v_normal; \
-              layout (location = 2) in vec2 v_tc; \
+              layout (location = 1) in vec2 v_tc; \
+              layout (location = 2) in vec3 v_normal; \
                 \
               out vec3 varNorm;\
               out vec3 varLdir; \
@@ -70,7 +70,7 @@ bool Shader::AddShader(GLenum ShaderType)
               out vec2 tc;\
               \
               uniform bool hasTexture;\
-              \
+              uniform bool hasNormalMap;\
               \
               layout (binding=0) uniform sampler2D sp;\
               layout (binding=1) uniform sampler2D sp1; \

@@ -142,6 +142,7 @@
     <ClCompile Include="Code\camera.cpp" />
     <ClCompile Include="Code\engine.cpp" />
     <ClCompile Include="Code\graphics.cpp" />
+    <ClCompile Include="Code\light.cpp" />
     <ClCompile Include="Code\main.cpp" />
     <ClCompile Include="Code\mesh.cpp" />
     <ClCompile Include="Code\object.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="Code\engine.h" />
     <ClInclude Include="Code\graphics.h" />
     <ClInclude Include="Code\graphics_headers.h" />
+    <ClInclude Include="Code\light.h" />
     <ClInclude Include="Code\mesh.h" />
     <ClInclude Include="Code\object.h" />
     <ClInclude Include="Code\shader.h" />

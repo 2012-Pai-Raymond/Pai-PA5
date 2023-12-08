@@ -28,6 +28,8 @@ public:
     GLuint getTextureID() { return m_texture->getTextureID(); }
     GLuint getTexNormalID() { return m_normal->getTextureID(); }
 
+    void invertNormals() {for (auto& vert : Vertices) {vert.normal *= -1.F;}}
+
     bool hasTex;
     bool hasTexNorm;
 
@@ -37,6 +39,8 @@ private:
     std::vector<Vertex> Vertices;
     std::vector<unsigned int> Indices;
     GLuint VB;
+    GLuint TB;
+    GLuint NB;
     GLuint IB;
     Texture* m_texture;
     Texture* m_normal;

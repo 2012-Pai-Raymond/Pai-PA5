@@ -90,6 +90,18 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
 
     // Bind your VBO
     glBindBuffer(GL_ARRAY_BUFFER, VB);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]), 0);
+
+    /*
+    glBindBuffer(GL_ARRAY_BUFFER, TB);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(texCoords[0]), 0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, NB);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(normals[0]), 0);
+    */
 
     // Set vertex attribute pointers to the load correct data. Update here to load the correct attributes.
     glVertexAttribPointer(posAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
@@ -99,8 +111,10 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
     // If has texture, set up texture unit(s): update here for texture rendering
     if (m_texture != NULL) {
         glUniform1i(hasTextureLoc, true);
+        //std::cout << "has texture" << std::endl;
     }
     else
+        //std::cout << "has no texture" << std::endl;
         glUniform1i(hasTextureLoc, false);
     
     glVertexAttribPointer(tcAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
@@ -150,6 +164,16 @@ void Sphere::setupBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, VB);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
 
+    /*
+    glGenBuffers(1, &TB);
+    glBindBuffer(GL_ARRAY_BUFFER, TB);
+    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(texCoords[0]), &texCoords[0], GL_STATIC_DRAW);
+   
+    glGenBuffers(1, &NB);
+    glBindBuffer(GL_ARRAY_BUFFER, NB);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(normals[0]), &normals[0], GL_STATIC_DRAW);
+    */
+
     glGenBuffers(1, &IB);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
@@ -185,7 +209,7 @@ void Sphere::init(int prec) {
             float z = (float)sin(toRadians(j * 360.f / prec)) * (float)abs(cos(asin(y)));
             vertices[i * (prec + 1) + j] = glm::vec3(x, y, z);
             texCoords[i * (prec + 1) + j] = glm::vec2(((float)j / prec), ((float)i / prec));
-            normals[i * (prec + 1) + j] = glm::vec3(x, y, z);
+            normals[i * (prec + 1) + j] = glm::normalize(glm::vec3(x, y, z));
         }
     }
 
