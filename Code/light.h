@@ -11,7 +11,7 @@ public:
 	glm::vec4 m_globalAmbient;
 	glm::vec4 m_lightAmbient;
 	glm::vec4 m_lightDiffuse;
-	glm::vec3 m_lightPosition;
+	glm::vec3 m_lightPosition = glm::vec3(0.0, 0.0, 0.0);
 	glm::vec3 m_lightPositionViewSpace;
 	glm::vec4 m_lightSpecular;
 

@@ -1,3 +1,4 @@
+
 #include "sphere.h"
 
 Sphere::Sphere()
@@ -24,7 +25,7 @@ Sphere::Sphere(int prec, const char* fname) { // prec is precision, or number of
     setupBuffers();
     setupModelMatrix(glm::vec3(0., 0., 0.), 0., 1.);
 
-        // load texture from file
+    // load texture from file
     m_texture = new Texture(fname);
     if (m_texture)
         hasTex = true;
@@ -45,7 +46,7 @@ Sphere::Sphere(int prec, const char* fname, const char* f1name) { // prec is pre
         hasTex = true;
     else
         hasTex = false;
-    
+
     // load normal texture from file
     m_normal = new Texture(f1name);
     if (m_normal)
@@ -66,7 +67,7 @@ void Sphere::Render(GLint positionAttribLoc, GLint colorAttribLoc)
     glBindBuffer(GL_ARRAY_BUFFER, VB);
     glVertexAttribPointer(positionAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glVertexAttribPointer(colorAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
- 
+
 
     // Bind your index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
@@ -81,8 +82,8 @@ void Sphere::Render(GLint positionAttribLoc, GLint colorAttribLoc)
 
 void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, GLint nmAttribLoc, GLint hasTextureLoc, GLint hasTexNormalLoc)
 {
-   // glBindVertexArray(vao);
-    // Enable vertex attibute arrays for each vertex attrib
+    // glBindVertexArray(vao);
+     // Enable vertex attibute arrays for each vertex attrib
     glEnableVertexAttribArray(posAttribLoc);
     glEnableVertexAttribArray(normAttribLoc);
     glEnableVertexAttribArray(tcAttribLoc);
@@ -97,7 +98,7 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
     glBindBuffer(GL_ARRAY_BUFFER, TB);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(texCoords[0]), 0);
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, NB);
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(normals[0]), 0);
@@ -106,7 +107,7 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
     // Set vertex attribute pointers to the load correct data. Update here to load the correct attributes.
     glVertexAttribPointer(posAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
     glVertexAttribPointer(normAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-    
+
 
     // If has texture, set up texture unit(s): update here for texture rendering
     if (m_texture != NULL) {
@@ -116,7 +117,7 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
     else
         //std::cout << "has no texture" << std::endl;
         glUniform1i(hasTextureLoc, false);
-    
+
     glVertexAttribPointer(tcAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
 
     if (m_normal != NULL) {
@@ -163,16 +164,6 @@ void Sphere::setupBuffers() {
     glGenBuffers(1, &VB);
     glBindBuffer(GL_ARRAY_BUFFER, VB);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * Vertices.size(), &Vertices[0], GL_STATIC_DRAW);
-
-    /*
-    glGenBuffers(1, &TB);
-    glBindBuffer(GL_ARRAY_BUFFER, TB);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(texCoords[0]), &texCoords[0], GL_STATIC_DRAW);
-   
-    glGenBuffers(1, &NB);
-    glBindBuffer(GL_ARRAY_BUFFER, NB);
-    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(normals[0]), &normals[0], GL_STATIC_DRAW);
-    */
 
     glGenBuffers(1, &IB);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);

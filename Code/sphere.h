@@ -39,8 +39,8 @@ private:
     std::vector<Vertex> Vertices;
     std::vector<unsigned int> Indices;
     GLuint VB;
-    GLuint TB;
-    GLuint NB;
+    //GLuint TB;
+    //GLuint NB;
     GLuint IB;
     Texture* m_texture;
     Texture* m_normal;

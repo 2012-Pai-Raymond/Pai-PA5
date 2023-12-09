@@ -13,8 +13,8 @@ Light::Light(glm::mat4 viewMatrix) {
 }
 Light::Light(glm::mat4 viewMatrix, glm::vec4 lightAmb, glm::vec4 lightDiff, glm::vec4 lightSpec, glm::vec4 gAmb) {
 	
-	SetViewSpacePosition(viewMatrix);
-	//m_lightPositionViewSpace = glm::vec3(0, 0, 0);
+	//SetViewSpacePosition(viewMatrix);
+	m_lightPositionViewSpace = glm::vec3(0, 0, 0);
 	
 	m_lightAmbient[0] = lightAmb[0];
 	m_lightAmbient[1] = lightAmb[1];

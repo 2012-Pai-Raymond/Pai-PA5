@@ -42,10 +42,10 @@ bool Graphics::Initialize(int width, int height)
 
 	//m_light = new Light(m_camera->GetView(), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
 	m_light = new Light(m_camera->GetView(), 
-		glm::vec4(1.f, 1.f, 1.f, 1.0f), //light ambient
-		glm::vec4(5.1f, 5.1f, 5.1f, 1.f), //light diffusion 
-		glm::vec4(0.1f, 0.1f, 0.1f, 1.f), //light specular
-		glm::vec4(0.1f, 0.1f, 0.1f, 1.f) //globalambient
+		glm::vec4(1.3f, 1.3f, 1.3f, 1.0f), //light ambient
+		glm::vec4(.5f, .5f, .5f, 1.f), //light diffusion 
+		glm::vec4(0.5f, 0.5f, 0.5f, 1.f), //light specular
+		glm::vec4(0.15f, 0.15f, 0.15f, 1.f) //globalambient
 	);
 	// Set up the shaders
 	m_shader = new Shader();
@@ -86,10 +86,10 @@ bool Graphics::Initialize(int width, int height)
 
 	// The Sun
 	m_sphere = new Sphere(64, ".\\assets\\2k_sun.jpg", ".\\assets\\2k_sun-n.jpg");
-	m_sphere->invertNormals();
+	//m_sphere->invertNormals();
 	// The Earth
+	//m_sphere2 = new Sphere(48, ".\\assets\\2k_earth_daymap.jpg", ".\\assets\\2k_earth_daymap-n.jpg");
 	m_sphere2 = new Sphere(48, ".\\assets\\2k_earth_daymap.jpg", ".\\assets\\2k_earth_daymap-n.jpg");
-	
 	// The moon
 	//m_sphere3 = new Sphere(48, ".\\assets\\2k_moon.jpg");
 
@@ -135,7 +135,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		m_mesh->Update(localTransform);
 	
 	// position of the first planet
-	speed = { 0.0, 0.0, 0.0 };
+	speed = { 0.5, 0.5, 0.5 };
 	dist = { 6., 0, 6. };
 	rotVector = { 0.,1.,0. };
 	rotSpeed = { 1., 1., 1. };
@@ -211,6 +211,7 @@ void Graphics::Render()
 
 	if (m_mesh != NULL) {
 		glUniform1i(m_hasTexture, false);
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_mesh->GetModel())))));
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_mesh->GetModel()));
 		if (m_mesh->hasTex) {
 			glActiveTexture(GL_TEXTURE0);
@@ -280,7 +281,7 @@ void Graphics::Render()
 		}
 		if (m_sphere2->hasTexNorm) {
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, m_sphere->getTexNormalID());
+			glBindTexture(GL_TEXTURE_2D, m_sphere2->getTexNormalID());
 			GLuint sampler = m_shader->GetUniformLocation("sp1");
 			if (sampler == INVALID_UNIFORM_LOCATION)
 			{
@@ -446,10 +447,10 @@ bool Graphics::collectShPrLocs() {
 	GLuint lightPosLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.position");
 	glProgramUniform3fv(m_shader->GetShaderProgram(), lightPosLoc, 1, glm::value_ptr(m_light->m_lightPositionViewSpace));
 
-	float matAmbient[4] = { 0.3, 0.3, 0.3, 0.3 };
-	float matDiff[4] = { 1.0, 1., 1., 1.0 };
+	float matAmbient[4] = { 0.5, 0.5, 0.5, 1. };
+	float matDiff[4] = { 0.3, 0.3, 0.3, 1.0 };
 	float matSpec[4] = { 0.5, 0.5, 0.5, 1.0 };
-	float matShininess = 1.;
+	float matShininess = 5.;
 
 	GLuint mAmbLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "material.ambient");
 	glProgramUniform4fv(m_shader->GetShaderProgram(), mAmbLoc, 1, matAmbient);
