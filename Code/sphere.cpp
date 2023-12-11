@@ -82,7 +82,7 @@ void Sphere::Render(GLint positionAttribLoc, GLint colorAttribLoc)
 
 void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, GLint nmAttribLoc, GLint hasTextureLoc, GLint hasTexNormalLoc)
 {
-    // glBindVertexArray(vao);
+    glBindVertexArray(vao);
      // Enable vertex attibute arrays for each vertex attrib
     glEnableVertexAttribArray(posAttribLoc);
     glEnableVertexAttribArray(normAttribLoc);
@@ -138,6 +138,9 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
     glDisableVertexAttribArray(normAttribLoc);
     glDisableVertexAttribArray(tcAttribLoc);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    glBindVertexArray(0);
 }
 
 
@@ -168,6 +171,9 @@ void Sphere::setupBuffers() {
     glGenBuffers(1, &IB);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
+
+
+    glBindVertexArray(0);
 }
 
 void Sphere::setupModelMatrix(glm::vec3 pivot, float angle, float scale) {

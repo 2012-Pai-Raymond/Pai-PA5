@@ -8,6 +8,8 @@
 class Mesh
 {
 public:
+    GLuint vao;
+
     Mesh();
     Mesh(glm::vec3 pivot, const char* fname);
     Mesh(glm::vec3 pivot, const char* fname, const char* tname);
@@ -18,7 +20,7 @@ public:
     void Render(GLint positionAttribLoc, GLint colorAttribLoc, GLint tcAttribLoc, GLint hasTex);
 
     glm::mat4 GetModel();
-
+    int getIndicesSize() { return Indices.size(); }
     bool InitBuffers();
     bool loadModelFromFile(const char* path);
 
@@ -37,7 +39,6 @@ private:
 
     Texture* m_texture;
 
-    GLuint vao;
 
     float angle;
 };

@@ -41,7 +41,7 @@ bool Graphics::Initialize(int width, int height)
 	}
 
 	//m_light = new Light(m_camera->GetView(), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-	m_light = new Light(m_camera->GetView(), 
+	m_light = new Light(m_camera->GetView(),
 		glm::vec4(1.3f, 1.3f, 1.3f, 1.0f), //light ambient
 		glm::vec4(.5f, .5f, .5f, 1.f), //light diffusion 
 		glm::vec4(0.5f, 0.5f, 0.5f, 1.f), //light specular
@@ -69,6 +69,13 @@ bool Graphics::Initialize(int width, int height)
 		return false;
 	}
 
+	if (!m_shader->AddAsteroidShader(GL_VERTEX_SHADER)) {
+		printf("Asteroid Vertex Shader failed to Intitialize\n");
+	}
+
+	if (!m_shader->AddAsteroidShader(GL_FRAGMENT_SHADER)) {
+		printf("Asteroid Fragment shader failed to Initialize\n");
+	}
 	// Connect the program
 	if (!m_shader->Finalize())
 	{
@@ -84,6 +91,7 @@ bool Graphics::Initialize(int width, int height)
 	// Starship
 	m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
 
+	m_asteroid = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png");
 	// The Sun
 	m_sphere = new Sphere(64, ".\\assets\\2k_sun.jpg", ".\\assets\\2k_sun-n.jpg");
 	//m_sphere->invertNormals();
@@ -118,7 +126,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	if (m_sphere != NULL)
 		m_sphere->Update(localTransform);
 
-	
+
 	speed = { 1.0, 1.0, 1.0 };
 	dist = { 0., 3., 3. };
 	rotVector = { 1.,0.,0. };
@@ -133,7 +141,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (m_mesh != NULL)
 		m_mesh->Update(localTransform);
-	
+
 	// position of the first planet
 	speed = { 0.5, 0.5, 0.5 };
 	dist = { 6., 0, 6. };
@@ -148,7 +156,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (m_sphere2 != NULL)
 		m_sphere2->Update(localTransform);
-	
+
 	// position of the moon
 	/*
 	speed = { 6, 6, 6 };
@@ -175,7 +183,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 }
 
 
-void Graphics::ComputeTransforms(double dt, std::vector<float> speed, std::vector<float> dist, 
+void Graphics::ComputeTransforms(double dt, std::vector<float> speed, std::vector<float> dist,
 	std::vector<float> rotSpeed, glm::vec3 rotVector, std::vector<float> scale, glm::mat4& tmat, glm::mat4& rmat, glm::mat4& smat) {
 	tmat = glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2])
@@ -196,11 +204,11 @@ void Graphics::Render()
 	// Send in the projection and view to the shader (stay the same while camera intrinsic(perspective) and extrinsic (view) parameters are the same
 	glUniformMatrix4fv(m_projectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection()));
 	glUniformMatrix4fv(m_viewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView()));
-	
-	
+
+
 	//glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere->GetModel()));
 
-	
+
 	//glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere2->GetModel()));
 
 	// Render the objects
@@ -221,6 +229,7 @@ void Graphics::Render()
 			{
 				printf("Sampler Not found not found\n");
 			}
+			glUseProgram(m_shader->GetShaderProgram());
 			glUniform1i(sampler, 0);
 			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
 			m_mesh->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
@@ -262,8 +271,8 @@ void Graphics::Render()
 		//m_sphere->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
 		m_sphere->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
 	}
-	
-	
+
+
 	if (m_sphere2 != NULL) {
 		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_sphere2->GetModel())))));
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_sphere2->GetModel()));
@@ -311,6 +320,29 @@ void Graphics::Render()
 		}
 	}
 	*/
+	m_shader->AsteroidEnable();
+	
+	glUniformMatrix4fv(m_astProjectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection()));
+	glUniformMatrix4fv(m_astViewMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetView()));
+
+	if (m_asteroid != NULL) {
+		glUniform1i(m_astHasTexture, false);
+
+		if (m_asteroid->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_asteroid->getTextureID());
+			GLuint sampler = m_shader->GetAsUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUniform1i(sampler, 0);
+			glUseProgram(m_shader->GetAstShaderProgram());
+			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
+			m_asteroid->Render(m_astPositionAttribLoc, m_astNormalAttribLoc, m_astInstMatrixAttribLoc,m_astTcAttribLoc, m_astHasTexture);
+		}
+	}
+	
 
 	// Get any errors from OpenGL
 	auto error = glGetError();
@@ -364,7 +396,7 @@ bool Graphics::collectShPrLocs() {
 		anyProblem = false;
 	}
 
-	
+
 	// Locate the normal vertex attribute
 	m_normAttrib = m_shader->GetAttribLocation("v_normal");
 	if (m_normAttrib == -1)
@@ -373,7 +405,7 @@ bool Graphics::collectShPrLocs() {
 		anyProblem = false;
 	}
 
-	
+
 	// Locate the color vertex attribute
 	/*
 	m_colorAttrib = m_shader->GetAttribLocation("v_color");
@@ -383,7 +415,7 @@ bool Graphics::collectShPrLocs() {
 		anyProblem = false;
 	}
 	*/
-	
+
 	// Locate the color vertex attribute
 	m_tcAttrib = m_shader->GetAttribLocation("v_tc");
 	if (m_tcAttrib == -1)
@@ -411,6 +443,83 @@ bool Graphics::collectShPrLocs() {
 		anyProblem = false;
 	}
 
+	//===================== Asteroid Vertex Attribute Setup ======================
+
+	m_astProjectionMatrix = m_shader->GetAsUniformLocation("projectionMatrix");
+	if (m_astProjectionMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astProjectionMatrix not found\n");
+		anyProblem = false;
+	}
+
+	m_astViewMatrix = m_shader->GetAsUniformLocation("viewMatrix");
+	if (m_astViewMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astViewMatrix not found\n");
+		anyProblem = false;
+	}
+
+	/*
+	m_astModelMatrix = m_shader->GetAsUniformLocation("modelMatrix");
+	if (m_astModelMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astModelMatrix not found\n");
+		anyProblem = false;
+	}
+	*/
+
+	//Locate the normal Matrix in shader
+	
+	/* m_astNormalMatrix = m_shader->GetAsUniformLocation("normMatrix");
+	if (m_astNormalMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astNormalMatrix not found\n");
+		anyProblem = false;
+	}*/
+
+	m_astPositionAttribLoc = m_shader->GetAsAttribLocation("v_position");
+	if (m_astPositionAttribLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astPositionAttribLoc not found\n");
+		anyProblem = false;
+	}
+
+	m_astNormalAttribLoc = m_shader->GetAsAttribLocation("v_color");
+	if (m_astNormalAttribLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astNormalAttribLoc not found\n");
+		anyProblem = false;
+	}
+
+	m_astTcAttribLoc = m_shader->GetAsAttribLocation("v_tc");
+	if (m_astTcAttribLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astTcAttribLoc not found\n");
+		anyProblem = false;
+	}
+
+	m_astInstMatrixAttribLoc = m_shader->GetAsAttribLocation("aInstanceMatrix");
+	if (m_astInstMatrixAttribLoc == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astInstMatrixAttribAttribLoc not found\n");
+		anyProblem = false;
+	}
+
+	m_astHasTexture = m_shader->GetAsUniformLocation("hasTexture");
+	if (m_astHasTexture == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_astTcAttribLoc not found\n");
+		anyProblem = false;
+	}
+
+	/*
+	m_hasTexNorm = m_shader->GetUniformLocation("hasNormalMap");
+	if (m_hasTexture == INVALID_UNIFORM_LOCATION) {
+		printf("hasNormalMap uniform not found\n");
+		anyProblem = false;
+	}
+	*/
+
 	GLuint globalAmbLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "GlobalAmbient");
 	if (globalAmbLoc == INVALID_UNIFORM_LOCATION)
 	{
@@ -418,9 +527,9 @@ bool Graphics::collectShPrLocs() {
 		anyProblem = false;
 	}
 	glProgramUniform4fv(m_shader->GetShaderProgram(), globalAmbLoc, 1, glm::value_ptr(m_light->m_globalAmbient));
-	
+
 	GLuint lightAloc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.ambient");
-	if (lightAloc == INVALID_UNIFORM_LOCATION) 
+	if (lightAloc == INVALID_UNIFORM_LOCATION)
 	{
 		printf("Shader LightAmbient element not found\n");
 		anyProblem = false;
@@ -448,7 +557,7 @@ bool Graphics::collectShPrLocs() {
 	glProgramUniform3fv(m_shader->GetShaderProgram(), lightPosLoc, 1, glm::value_ptr(m_light->m_lightPositionViewSpace));
 
 	float matAmbient[4] = { 0.5, 0.5, 0.5, 1. };
-	float matDiff[4] = { 0.3, 0.3, 0.3, 1.0 };
+	float matDiff[4] = { 0.15, 0.15, 0.15, 1.0 };
 	float matSpec[4] = { 0.5, 0.5, 0.5, 1.0 };
 	float matShininess = 5.;
 
@@ -499,4 +608,3 @@ std::string Graphics::ErrorString(GLenum error)
 		return "None";
 	}
 }
-

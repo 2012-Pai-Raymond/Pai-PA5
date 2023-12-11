@@ -1,25 +1,18 @@
-#include "mesh.h"
+#include "AsteroidMesh.h"
 
-Mesh::Mesh()
+AsteroidMesh::AsteroidMesh()
 {
-	// Vertex Set Up
-	// No mesh
-
-	// Model Set Up
 	angle = 0.0f;
 	pivotLocation = glm::vec3(0.f, 0.f, 0.f);
 	model = glm::translate(glm::mat4(1.0f), pivotLocation);
 
-	// Buffer Set Up
 	if (!InitBuffers()) {
 		printf("Some buffers not initialized.\n");
 	}
-
 }
 
-Mesh::Mesh(glm::vec3 pivot, const char* fname)
+AsteroidMesh::AsteroidMesh(glm::vec3 pivot, const char* fname)
 {
-	// Vertex Set Up
 	loadModelFromFile(fname);
 
 	// Model Set Up
@@ -29,13 +22,13 @@ Mesh::Mesh(glm::vec3 pivot, const char* fname)
 
 	// Buffer Set Up
 	if (!InitBuffers()) {
-		printf("some buffers not initialized.\n");
+		printf("Some buffers not initialized.\n");
 	}
 
 	hasTex = false;
 }
 
-Mesh::Mesh(glm::vec3 pivot, const char* fname, const char* tname)
+AsteroidMesh::AsteroidMesh(glm::vec3 pivot, const char* fname, const char* tname)
 {
 	// Vertex Set Up
 	loadModelFromFile(fname);
@@ -58,53 +51,18 @@ Mesh::Mesh(glm::vec3 pivot, const char* fname, const char* tname)
 		hasTex = false;
 }
 
-
-Mesh::~Mesh()
-{
-	Vertices.clear();
-	Indices.clear();
+glm::mat4 AsteroidMesh::GetModel() {
+	return model;
 }
-
-void Mesh::Update(glm::mat4 inmodel)
+void AsteroidMesh::Update(glm::mat4 inmodel)
 {
 	model = inmodel;
 
 }
 
-glm::mat4 Mesh::GetModel()
-{
-	return model;
-}
-
-void Mesh::Render(GLint posAttribLoc, GLint colAttribLoc)
+void AsteroidMesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint instMatrixAttribLoc, GLint tcAttribLoc, GLint hasTextureLoc)
 {
 
-	glBindVertexArray(vao);
-
-	// Enable vertex attibute arrays for each vertex attrib
-	glEnableVertexAttribArray(posAttribLoc);
-	glEnableVertexAttribArray(colAttribLoc);
-
-	// Bind your VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VB);
-
-	// Set vertex attribute pointers to the load correct data
-	glVertexAttribPointer(posAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(colAttribLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-
-	// Bind your Element Array
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
-
-	// Render
-	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
-
-	// Disable vertex arrays
-	glDisableVertexAttribArray(posAttribLoc);
-	glDisableVertexAttribArray(colAttribLoc);
-}
-
-void Mesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint tcAttribLoc, GLint hasTextureLoc)
-{
 	glBindVertexArray(vao);
 	// Enable vertex attibute arrays for each vertex attrib
 	glEnableVertexAttribArray(posAttribLoc);
@@ -126,25 +84,30 @@ void Mesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint tcAttribLoc, GLi
 		glUniform1i(hasTextureLoc, false);
 
 	glVertexAttribPointer(tcAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
-	
-	// Bind your Element Array
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
+	glBindVertexArray(0);
 
+	// Bind your Element Array
+	//Gl Enable instance Matrix Location
 	// Render
-	glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(vao);
+	glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(Indices.size()), GL_UNSIGNED_INT, 0, amount);
+	glBindVertexArray(0);
 
-	// Disable vertex arrays
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(posAttribLoc);
 	glDisableVertexAttribArray(colAttribLoc);
 	glDisableVertexAttribArray(tcAttribLoc);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
 	glBindVertexArray(0);
+
+	// Disable vertex arrays
+	//glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
+
 }
 
-
-bool Mesh::InitBuffers() {
+bool AsteroidMesh::InitBuffers() {
 
 	// For OpenGL 3
 	glGenVertexArrays(1, &vao);
@@ -161,10 +124,65 @@ bool Mesh::InitBuffers() {
 
 	glBindVertexArray(0);
 
+	//Asteroid configuring large list of semi-random model transformation matrices
+	glm::mat4* modelMatrices;
+	modelMatrices = new glm::mat4[amount];
+	srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
+	float radius = 75.0;
+	float offset = 15.0f;
+	for (unsigned int i = 0; i < amount; i++)
+	{
+		glm::mat4 model1 = glm::mat4(1.0f);
+		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+		float angle = (float)i / (float)amount * 360.0f;
+		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float x = sin(angle) * radius + displacement;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float z = cos(angle) * radius + displacement;
+		model1 = glm::translate(model1, glm::vec3(x, y, z));
+
+		// 2. scale: Scale between 0.05 and 0.25f
+		float scale = static_cast<float>((rand() % 20) / 100.0 + 0.05);
+		model1 = glm::scale(model1, glm::vec3(scale));
+
+		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+		float rotAngle = static_cast<float>((rand() % 360));
+		model1 = glm::rotate(model1, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+		// 4. now add to list of matrices
+		modelMatrices[i] = model1;
+	}
+
+	unsigned int buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	glBindVertexArray(vao);
+
+	std::size_t vec4Size = sizeof(glm::vec4);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+
+	glBindVertexArray(0);
+
 	return true;
 }
 
-bool Mesh::loadModelFromFile(const char* path) {
+bool AsteroidMesh::loadModelFromFile(const char* path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 
@@ -182,7 +200,7 @@ bool Mesh::loadModelFromFile(const char* path) {
 		int iMeshFaces = mesh->mNumFaces;
 		for (int j = 0; j < iMeshFaces; j++) {
 			const aiFace& face = mesh->mFaces[j];
-			
+
 			for (int k = 0; k < 3; k++) {
 				// update here for each mesh's vertices to assign position, normal, and texture coordinates
 				glm::vec3 position(mesh->mVertices[face.mIndices[k]].x, mesh->mVertices[face.mIndices[k]].y, mesh->mVertices[face.mIndices[k]].z);
@@ -199,10 +217,6 @@ bool Mesh::loadModelFromFile(const char* path) {
 
 				// Update here for each mesh's vertices to assign position, normal, and texture coordinates
 				Vertices.push_back(Vertex(position, normal, texCoords));
-				
-				/*Vertices.push_back(Vertex(glm::vec3(mesh->mVertices[face.mIndices[k]].x, mesh->mVertices[face.mIndices[k]].y, mesh->mVertices[face.mIndices[k]].z),
-					mesh->HasNormals() ? glm::vec3(mesh->mNormals[face.mIndices[k]].x, mesh->mNormals[face.mIndices[k]].y, mesh->mNormals[face.mIndices[k]].z) :
-					glm::vec3(1.f, 1.f, 1.f), );*/
 			}
 
 		}

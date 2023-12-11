@@ -11,6 +11,7 @@ using namespace std;
 #include "object.h"
 #include "sphere.h"
 #include "mesh.h"
+#include "AsteroidMesh.h"
 #include "light.h"
 
 #define numVBOs 2;
@@ -19,7 +20,7 @@ using namespace std;
 
 class Graphics
 {
-  public:
+public:
     Graphics();
     ~Graphics();
     bool Initialize(int width, int height);
@@ -28,18 +29,18 @@ class Graphics
 
     Camera* getCamera() { return m_camera; }
 
-  private:
+private:
     std::string ErrorString(GLenum error);
 
     bool collectShPrLocs();
-    void ComputeTransforms (double dt, std::vector<float> speed, std::vector<float> dist,
-        std::vector<float> rotSpeed, glm::vec3 rotVector, std::vector<float> scale, 
+    void ComputeTransforms(double dt, std::vector<float> speed, std::vector<float> dist,
+        std::vector<float> rotSpeed, glm::vec3 rotVector, std::vector<float> scale,
         glm::mat4& tmat, glm::mat4& rmat, glm::mat4& smat);
 
     stack<glm::mat4> modelStack;
 
-    Camera *m_camera;
-    Shader *m_shader;
+    Camera* m_camera;
+    Shader* m_shader;
 
     GLint m_projectionMatrix;
     GLint m_viewMatrix;
@@ -55,6 +56,16 @@ class Graphics
     GLint m_texNormalAttrib;
     GLint m_hasTexNorm;
 
+    GLint m_astProjectionMatrix;
+    GLint m_astViewMatrix;
+    GLint m_astModelMatrix;
+    GLint m_astNormalMatrix;
+    GLint m_astPositionAttribLoc;
+    GLint m_astNormalAttribLoc;
+    GLint m_astTcAttribLoc;
+    GLint m_astInstMatrixAttribLoc;
+
+    GLint m_astHasTexture;
 
     Sphere* m_sphere;
     Sphere* m_sphere2;
@@ -63,6 +74,7 @@ class Graphics
     Light* m_light;
 
     Mesh* m_mesh;
+    AsteroidMesh* m_asteroid;
 
 
 };
