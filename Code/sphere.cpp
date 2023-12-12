@@ -26,7 +26,7 @@ Sphere::Sphere(int prec, const char* fname) { // prec is precision, or number of
     setupModelMatrix(glm::vec3(0., 0., 0.), 0., 1.);
 
     // load texture from file
-    m_texture = new Texture(fname);
+    m_texture = new Texture(fname, TEXTURE);
     if (m_texture)
         hasTex = true;
     else
@@ -41,14 +41,14 @@ Sphere::Sphere(int prec, const char* fname, const char* f1name) { // prec is pre
     setupModelMatrix(glm::vec3(0., 0., 0.), 0., 1.);
 
     // load texture from file
-    m_texture = new Texture(fname);
+    m_texture = new Texture(fname, TEXTURE);
     if (m_texture)
         hasTex = true;
     else
         hasTex = false;
 
     // load normal texture from file
-    m_normal = new Texture(f1name);
+    m_normal = new Texture(f1name, TEXTURE);
     if (m_normal)
         hasTexNorm = true;
     else

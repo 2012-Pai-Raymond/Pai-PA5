@@ -99,6 +99,7 @@ bool Graphics::Initialize(int width, int height)
 	// Starship
 	//m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
 
+	
 	m_skybox = new SkyBox(
 		".\\assets\\SkyBox\\StarSkybox041.png",
 		".\\assets\\SkyBox\\StarSkybox042.png",
@@ -106,7 +107,9 @@ bool Graphics::Initialize(int width, int height)
 		".\\assets\\SkyBox\\StarSkybox044.png",
 		".\\assets\\SkyBox\\StarSkybox045.png",
 		".\\assets\\SkyBox\\StarSkybox046.png");
+	
 
+	//m_skybox = new SkyBox(".\\assets\\SkyBox\\Galaxy2.jpg");
 	m_asteroid = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png", 2500, 50, 10);
 
 	m_asteroid2 = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png", 4000, 150, 15);
@@ -189,6 +192,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	modelStack.push(localTransform);
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (Saturn != NULL)

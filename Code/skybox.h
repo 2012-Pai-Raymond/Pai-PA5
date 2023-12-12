@@ -8,6 +8,7 @@
 class SkyBox
 {
 public:
+	SkyBox(const char* texFile);
 	SkyBox(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back);
 	void Render();
 private:

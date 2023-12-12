@@ -1,5 +1,8 @@
 #include "skybox.h"
-
+SkyBox::SkyBox(const char* texFile) {
+    m_texture = new Texture(texFile, SINGLECUBEMAP);
+    setupVertAndBuffers();
+}
 SkyBox::SkyBox(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back)
 {
 	m_texture = new Texture(right, left, top, bottom, front, back);

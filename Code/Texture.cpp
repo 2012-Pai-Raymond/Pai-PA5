@@ -1,9 +1,16 @@
 #include "Texture.h"
 
-Texture::Texture(const char* fileName) {
+Texture::Texture(const char* fileName, TextureType type) {
 
-	loadTexture(fileName);
-	initializeTexture();
+	if (type == TEXTURE) {
+		loadTexture(fileName);
+		initializeTexture();
+	}
+	else if (type == SINGLECUBEMAP) {
+		loadSingleSkyBoxTex(fileName);
+		initializeSkyBoxTexture();
+	}
+		
 }
 
 Texture::Texture(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back) {
@@ -26,7 +33,15 @@ bool Texture::loadTexture(const char* texFile) {
 	}
 	return true;
 }
-
+bool Texture::loadSingleSkyBoxTex(const char* texFile){
+	//std::cout << texFile << std::endl;
+	m_SkyBoxTexID = SOIL_load_OGL_single_cubemap(texFile, "NSWEUD", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+	if (!m_SkyBoxTexID) {
+		printf("Failed: Could not open single cubemap texture file!\n");
+		return false;
+	}
+	return true;
+}
 bool Texture::loadSkyBoxTex(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back) {
 	m_SkyBoxTexID = SOIL_load_OGL_cubemap(right, left, top, bottom, front, back, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	if (!m_SkyBoxTexID) {
