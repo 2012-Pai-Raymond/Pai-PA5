@@ -18,6 +18,37 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Code\AsteroidMesh.cpp" />
+    <ClCompile Include="Code\camera.cpp" />
+    <ClCompile Include="Code\engine.cpp" />
+    <ClCompile Include="Code\graphics.cpp" />
+    <ClCompile Include="Code\light.cpp" />
+    <ClCompile Include="Code\main.cpp" />
+    <ClCompile Include="Code\mesh.cpp" />
+    <ClCompile Include="Code\object.cpp" />
+    <ClCompile Include="Code\shader.cpp" />
+    <ClCompile Include="Code\skybox.cpp" />
+    <ClCompile Include="Code\sphere.cpp" />
+    <ClCompile Include="Code\Texture.cpp" />
+    <ClCompile Include="Code\window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Code\AsteroidMesh.h" />
+    <ClInclude Include="Code\camera.h" />
+    <ClInclude Include="Code\engine.h" />
+    <ClInclude Include="Code\graphics.h" />
+    <ClInclude Include="Code\graphics_headers.h" />
+    <ClInclude Include="Code\graphics_headers_1.h" />
+    <ClInclude Include="Code\light.h" />
+    <ClInclude Include="Code\mesh.h" />
+    <ClInclude Include="Code\object.h" />
+    <ClInclude Include="Code\shader.h" />
+    <ClInclude Include="Code\skybox.h" />
+    <ClInclude Include="Code\sphere.h" />
+    <ClInclude Include="Code\Texture.h" />
+    <ClInclude Include="Code\window.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -138,36 +169,6 @@
       <AdditionalDependencies>glew32.lib;glfw3.lib;OpenGL32.Lib;soil2-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Code\AsteroidMesh.cpp" />
-    <ClCompile Include="Code\camera.cpp" />
-    <ClCompile Include="Code\engine.cpp" />
-    <ClCompile Include="Code\graphics.cpp" />
-    <ClCompile Include="Code\light.cpp" />
-    <ClCompile Include="Code\main.cpp" />
-    <ClCompile Include="Code\mesh.cpp" />
-    <ClCompile Include="Code\object.cpp" />
-    <ClCompile Include="Code\shader.cpp" />
-    <ClCompile Include="Code\skybox.cpp" />
-    <ClCompile Include="Code\sphere.cpp" />
-    <ClCompile Include="Code\Texture.cpp" />
-    <ClCompile Include="Code\window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Code\AsteroidMesh.h" />
-    <ClInclude Include="Code\camera.h" />
-    <ClInclude Include="Code\engine.h" />
-    <ClInclude Include="Code\graphics.h" />
-    <ClInclude Include="Code\graphics_headers.h" />
-    <ClInclude Include="Code\light.h" />
-    <ClInclude Include="Code\mesh.h" />
-    <ClInclude Include="Code\object.h" />
-    <ClInclude Include="Code\shader.h" />
-    <ClInclude Include="Code\skybox.h" />
-    <ClInclude Include="Code\sphere.h" />
-    <ClInclude Include="Code\Texture.h" />
-    <ClInclude Include="Code\window.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
