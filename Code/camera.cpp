@@ -2,9 +2,9 @@
 
 Camera::Camera()
 {
-    Position = glm::vec3(0.0f, 0.0f, 10.0f);
+    Position = glm::vec3(0.0f, 20.0f, 50.0f);
     WorldUp = glm::vec3(0.0, 1.0, 0.0f);
-    Front = glm::vec3(0.0, 0, -0.1f);
+    Front = glm::vec3(0.0, 0.0, 0.0);
 
     MovementSpeed = SPEED;
     Pitch = PITCH;
@@ -65,8 +65,8 @@ void Camera::ProcessMouseScroll(float yoffset) {
     if (Zoom < 1.0f) {
         Zoom = 1.0f;
     }
-    if (Zoom > 45.0f) {
-        Zoom - 45.0f;
+    if (Zoom > 70.0f) {
+        Zoom = 70.0f;
     }
 }
 bool Camera::Initialize(int w, int h)
@@ -78,9 +78,9 @@ bool Camera::Initialize(int w, int h)
     /*view = glm::lookAt(glm::vec3(0.0, 10.0, -16.0), //Eye Position
                         glm::vec3(0.0, 0.0, 0.0), //Focus point
                         glm::vec3(0.0, 1.0, 0.0)); //Positive Y is up*/
-                        
+
     view = glm::lookAt(Position,
-        Front + Position + glm::vec3(0.0, 0.0, 0.0),
+        Front + Position,
         WorldUp
     );
     
