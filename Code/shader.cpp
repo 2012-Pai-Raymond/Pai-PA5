@@ -4,6 +4,7 @@ Shader::Shader()
 {
     m_shaderProg = 0;
     m_asteroidShaderProg = 0;
+    m_skyboxProg = 0;
 }
 
 Shader::~Shader()
@@ -18,6 +19,11 @@ Shader::~Shader()
         glDeleteShader(*it);
     }
 
+    for (std::vector<GLuint>::iterator it = m_skyboxObjList.begin(); it != m_skyboxObjList.end(); it++)
+    {
+        glDeleteShader(*it);
+    }
+
     if (m_shaderProg != 0)
     {
         glDeleteProgram(m_shaderProg);
@@ -28,6 +34,12 @@ Shader::~Shader()
     {
         glDeleteProgram(m_asteroidShaderProg);
         m_asteroidShaderProg = 0;
+    }
+
+    if (m_skyboxProg != 0)
+    {
+        glDeleteProgram(m_skyboxProg);
+        m_skyboxProg = 0;
     }
 }
 
@@ -46,6 +58,14 @@ bool Shader::Initialize()
     if (m_asteroidShaderProg == 0)
     {
         std::cerr << "Error creating asteroid shader program\n";
+        return false;
+    }
+
+    m_skyboxProg = glCreateProgram();
+
+    if (m_skyboxProg == 0)
+    {
+        std::cerr << "Error creating skybox shader program\n";
         return false;
     }
 
@@ -310,6 +330,83 @@ bool Shader::AddAsteroidShader(GLenum ShaderType)
     return true;
 }
 
+bool Shader::AddSkyBoxShader(GLenum ShaderType)
+{
+    std::string s;
+
+
+
+    if (ShaderType == GL_VERTEX_SHADER)
+    {
+        s = "#version 460\n \
+          layout (location = 0) in vec3 aPos;\
+          \
+          out vec3 TexCoords;\
+          \
+          uniform mat4 projection;\
+          uniform mat4 view;\
+          \
+          uniform samplerCube skybox;\
+          \
+          void main()\
+          {\
+            TexCoords = aPos;\
+            vec4 pos = projection * view * vec4(aPos, 1.0);\
+            gl_Position = pos.xyww;\
+          }\
+          ";
+    }
+    else if (ShaderType == GL_FRAGMENT_SHADER)
+    {
+        s = "#version 460\n \
+         out vec4 FragColor;\
+         \
+         in vec3 TexCoords;\
+         \
+         uniform samplerCube skybox;\
+         \
+         void main()\
+         {\
+            FragColor = texture(skybox, TexCoords);\
+         }\
+          ";
+    }
+
+
+    GLuint SkyBoxShaderObj = glCreateShader(ShaderType);
+
+    if (SkyBoxShaderObj == 0)
+    {
+        std::cerr << "Error creating asteroid shader type " << ShaderType << std::endl;
+        return false;
+    }
+
+    // Save the shader object - will be deleted in the destructor
+    m_skyboxObjList.push_back(SkyBoxShaderObj);
+
+    const GLchar* p[1];
+    p[0] = s.c_str();
+    GLint Lengths[1] = { (GLint)s.size() };
+
+    glShaderSource(SkyBoxShaderObj, 1, p, Lengths);
+
+    glCompileShader(SkyBoxShaderObj);
+
+    GLint success;
+    glGetShaderiv(SkyBoxShaderObj, GL_COMPILE_STATUS, &success);
+
+    if (!success)
+    {
+        GLchar InfoLog[1024];
+        glGetShaderInfoLog(SkyBoxShaderObj, 1024, NULL, InfoLog);
+        std::cerr << "Error compiling: " << InfoLog << std::endl;
+        return false;
+    }
+
+    glAttachShader(m_skyboxProg, SkyBoxShaderObj);
+
+    return true;
+}
 
 // After all the shaders have been added to the program call this function
 // to link and validate the program.
@@ -354,7 +451,7 @@ bool Shader::Finalize()
     glGetProgramiv(m_asteroidShaderProg, GL_LINK_STATUS, &AstSuccess);
     if (AstSuccess == 0)
     {
-        glGetProgramInfoLog(m_shaderProg, sizeof(AstErrorLog), NULL, ErrorLog);
+        glGetProgramInfoLog(m_asteroidShaderProg, sizeof(AstErrorLog), NULL, AstErrorLog);
         std::cerr << "Error linking asteroid shader program: " << AstErrorLog << std::endl;
         return false;
     }
@@ -376,6 +473,36 @@ bool Shader::Finalize()
 
     m_asteroidObjList.clear();
 
+    GLint SkyBoxSuccess = 0;
+    GLchar SkyBoxErrorLog[1024] = { 0 };
+
+    glLinkProgram(m_skyboxProg);
+
+    glGetProgramiv(m_skyboxProg, GL_LINK_STATUS, &SkyBoxSuccess);
+    if (SkyBoxSuccess == 0)
+    {
+        glGetProgramInfoLog(m_skyboxProg, sizeof(SkyBoxSuccess), NULL, SkyBoxErrorLog);
+        std::cerr << "Error linking skybox shader program: " << SkyBoxErrorLog << std::endl;
+        return false;
+    }
+
+    glValidateProgram(m_skyboxProg);
+    glGetProgramiv(m_skyboxProg, GL_VALIDATE_STATUS, &SkyBoxSuccess);
+    if (!SkyBoxSuccess)
+    {
+        glGetProgramInfoLog(m_skyboxProg, sizeof(SkyBoxErrorLog), NULL, SkyBoxErrorLog);
+        std::cerr << "Invalid skybox shader program: " << SkyBoxErrorLog << std::endl;
+        return false;
+    }
+
+    // Delete the intermediate shader objects that have been added to the program
+    for (std::vector<GLuint>::iterator it = m_skyboxObjList.begin(); it != m_skyboxObjList.end(); it++)
+    {
+        glDeleteShader(*it);
+    }
+
+    m_skyboxObjList.clear();
+
     return true;
 }
 
@@ -388,6 +515,11 @@ void Shader::Enable()
 void Shader::AsteroidEnable()
 {
     glUseProgram(m_asteroidShaderProg);
+}
+
+void Shader::SkyBoxEnable()
+{
+    glUseProgram(m_skyboxProg);
 }
 
 
@@ -430,6 +562,28 @@ GLint Shader::GetAsAttribLocation(const char* pAttribName)
 
     if (Location == -1) {
         fprintf(stderr, "Warning! Unable to get the location of asteroid attribute '%s'\n", pAttribName);
+    }
+
+    return Location;
+}
+
+GLint Shader::GetSbUniformLocation(const char* pUniformName)
+{
+    GLuint Location = glGetUniformLocation(m_skyboxProg, pUniformName);
+
+    if (Location == INVALID_UNIFORM_LOCATION) {
+        fprintf(stderr, "Warning! Unable to get the location of skybox uniform '%s'\n", pUniformName);
+    }
+
+    return Location;
+}
+
+GLint Shader::GetSbAttribLocation(const char* pAttribName)
+{
+    GLuint Location = glGetAttribLocation(m_skyboxProg, pAttribName);
+
+    if (Location == -1) {
+        fprintf(stderr, "Warning! Unable to get the location of skybox attribute '%s'\n", pAttribName);
     }
 
     return Location;

@@ -12,6 +12,7 @@ using namespace std;
 #include "sphere.h"
 #include "mesh.h"
 #include "AsteroidMesh.h"
+#include "skybox.h"
 #include "light.h"
 
 #define numVBOs 2;
@@ -67,14 +68,21 @@ private:
 
     GLint m_astHasTexture;
 
+    GLint m_sbProjectionMatrix;
+    GLint m_sbViewMatrix;
+
     Sphere* m_sphere;
     Sphere* m_sphere2;
     Sphere* m_sphere3;
 
     Light* m_light;
 
+    SkyBox* m_skybox;
+
     Mesh* m_mesh;
+    Mesh* Saturn;
     AsteroidMesh* m_asteroid;
+    AsteroidMesh* m_asteroid2;
 
 
 };

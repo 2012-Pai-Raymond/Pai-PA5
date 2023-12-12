@@ -8,7 +8,6 @@
 class Mesh
 {
 public:
-    GLuint vao;
 
     Mesh();
     Mesh(glm::vec3 pivot, const char* fname);
@@ -36,11 +35,13 @@ private:
     std::vector<unsigned int> Indices;
     GLuint VB;
     GLuint IB;
+    GLuint vao;
 
     Texture* m_texture;
 
 
     float angle;
+    //int textureIndex;
 };
 
 #endif

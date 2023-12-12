@@ -140,7 +140,7 @@ void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 }
 
 
@@ -173,7 +173,7 @@ void Sphere::setupBuffers() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
 
 
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 }
 
 void Sphere::setupModelMatrix(glm::vec3 pivot, float angle, float scale) {

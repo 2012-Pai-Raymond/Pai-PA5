@@ -1,21 +1,20 @@
 #ifndef ASTEROIDMESH_H
 #define ASTEROIDMESH_H
 
-
+#include <vector>
+#include "graphics_headers.h"
 #include "Texture.h"
-#include "mesh.h"
 
 class AsteroidMesh
 {
 	public:
 
 		AsteroidMesh();
-		AsteroidMesh(glm::vec3 pivot, const char* fname);
-		AsteroidMesh(glm::vec3 pivot, const char* fname, const char* tname);
+		AsteroidMesh(glm::vec3 pivot, const char* fname, const char* tname, unsigned int amountSet, float radiusSet, float setOffSet);
 
-		//~AsteroidMesh();
+		~AsteroidMesh();
 		void Update(glm::mat4 model);
-		void Render(GLint postionAttribLoc, GLint colorAttribLoc, GLint instMatrixAttribLoc, GLint tcAttribLoc, GLint hasTex);
+		void Render(GLint postionAttribLoc, GLint colorAttribLoc, GLint tcAttribLoc, GLint hasTex);
 
 		glm::mat4 GetModel();
 		bool InitBuffers();
@@ -25,7 +24,6 @@ class AsteroidMesh
 		GLuint getTextureID() { return m_texture->getTextureID(); }
 
 	private:
-		unsigned int amount = 5000;
 		glm::vec3 pivotLocation;
 		glm::mat4 model;
 		std::vector<Vertex> Vertices;
@@ -38,7 +36,10 @@ class AsteroidMesh
 
 		Texture* m_texture;
 
+		unsigned int amount;
 		float angle;
+		float radius;
+		float offset;
 };
 
 #endif

@@ -148,6 +148,7 @@
     <ClCompile Include="Code\mesh.cpp" />
     <ClCompile Include="Code\object.cpp" />
     <ClCompile Include="Code\shader.cpp" />
+    <ClCompile Include="Code\skybox.cpp" />
     <ClCompile Include="Code\sphere.cpp" />
     <ClCompile Include="Code\Texture.cpp" />
     <ClCompile Include="Code\window.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Code\mesh.h" />
     <ClInclude Include="Code\object.h" />
     <ClInclude Include="Code\shader.h" />
+    <ClInclude Include="Code\skybox.h" />
     <ClInclude Include="Code\sphere.h" />
     <ClInclude Include="Code\Texture.h" />
     <ClInclude Include="Code\window.h" />

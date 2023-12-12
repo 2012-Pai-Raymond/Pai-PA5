@@ -5,6 +5,7 @@ Mesh::Mesh()
 	// Vertex Set Up
 	// No mesh
 
+	//textureIndex = 0;
 	// Model Set Up
 	angle = 0.0f;
 	pivotLocation = glm::vec3(0.f, 0.f, 0.f);
@@ -19,6 +20,9 @@ Mesh::Mesh()
 
 Mesh::Mesh(glm::vec3 pivot, const char* fname)
 {
+
+	//textureIndex = 0;
+
 	// Vertex Set Up
 	loadModelFromFile(fname);
 
@@ -37,6 +41,8 @@ Mesh::Mesh(glm::vec3 pivot, const char* fname)
 
 Mesh::Mesh(glm::vec3 pivot, const char* fname, const char* tname)
 {
+	//textureIndex = 0;
+
 	// Vertex Set Up
 	loadModelFromFile(fname);
 
@@ -140,7 +146,7 @@ void Mesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint tcAttribLoc, GLi
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 }
 
 
@@ -159,7 +165,6 @@ bool Mesh::InitBuffers() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
 
-	glBindVertexArray(0);
 
 	return true;
 }
@@ -180,6 +185,7 @@ bool Mesh::loadModelFromFile(const char* path) {
 	for (int i = 0; i < scene->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[i];
 		int iMeshFaces = mesh->mNumFaces;
+
 		for (int j = 0; j < iMeshFaces; j++) {
 			const aiFace& face = mesh->mFaces[j];
 			

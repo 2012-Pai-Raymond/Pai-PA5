@@ -81,8 +81,8 @@ bool Camera::Initialize(int w, int h)
 
     projection = glm::perspective(glm::radians(90.f), //the FoV typically 90 degrees is good which is what this is set to
         float(w) / float(h), //Aspect Ratio, so Circles stay Circular
-        0.01f, //Distance to the near plane, normally a small value like this
-        100.0f); //Distance to the far plane, 
+        0.1f, //Distance to the near plane, normally a small value like this
+        100000.0f); //Distance to the far plane, 
     width = w;
     height = h;
     return true;
@@ -116,7 +116,7 @@ void Camera::Update() {
     );
 
     //std::cout << Front.x << "|| " << Front.y << "||" << Front.z << std::endl;
-    projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.01f, 100.0f);
+    projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.1f, 10000.0f);
     //view = glm::translate(view, m_speed);
     //view = glm::rotate(view, m_rotSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 }
