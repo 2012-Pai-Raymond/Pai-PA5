@@ -29,6 +29,7 @@ public:
     void Render();
 
     Camera* getCamera() { return m_camera; }
+    Mesh* getSpaceship() { return m_mesh; }
 
 private:
     std::string ErrorString(GLenum error);
