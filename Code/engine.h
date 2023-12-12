@@ -49,8 +49,6 @@ private:
     float lastX;
     float lastY;
     bool firstMouse = true;
-
-    Mesh* spaceship;
 };
 
 #endif // ENGINE_H

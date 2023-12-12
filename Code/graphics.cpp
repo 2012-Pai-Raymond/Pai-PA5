@@ -97,9 +97,8 @@ bool Graphics::Initialize(int width, int height)
 	}
 
 	// Starship
-	//m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
+	m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
 
-	
 	m_skybox = new SkyBox(
 		".\\assets\\SkyBox\\StarSkybox041.png",
 		".\\assets\\SkyBox\\StarSkybox042.png",
@@ -110,6 +109,7 @@ bool Graphics::Initialize(int width, int height)
 	
 
 	//m_skybox = new SkyBox(".\\assets\\SkyBox\\Galaxy2.jpg");
+
 	m_asteroid = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png", 2500, 50, 10);
 
 	m_asteroid2 = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png", 4000, 150, 15);
@@ -151,36 +151,24 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		m_sphere->Update(localTransform);
 
 
-	//speed = { 1.0, 1.0, 1.0 };
-	//dist = { 0., 3., 3. };
-	//rotVector = { 1.,0.,0. };
-	//rotSpeed = { 0., 1., 1. };
+	// Spaceship
 	scale = { .01,.01,.01 };
-	float rotationOffset = 90.0f;
-	glm::vec3 Yoffset = { 0, -0.5f, 0 };
-	glm::vec3 Xoffset = { 0 , 0, 1.1f };
-	
-	glm::vec3 Yrotater = glm::rotateX(Yoffset, glm::radians(-m_camera->getPitch()));
-	glm::vec3 Xrotater = glm::rotateY(Xoffset, glm::radians(-m_camera->getYaw()));
-
-	//std::cout << "Vector: " << Yoffset.x << " " << Yoffset.y << " " << Yoffset.z << std::endl;
-	//std::cout << "Length: " << glm::length(Yoffset) << std::endl;
-	//std::cout << "Pitch: " << m_camera->getPitch() << std::endl;
-
+	glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
+	float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
 
 	localTransform = modelStack.top(); // start with sun's position
-	localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position (to camera's)
+	localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
 	// Rotations
 	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
 	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
 	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
-	// Move down and forward
-	localTransform *= glm::translate(glm::mat4(1.0f), Yoffset);
-	localTransform *= glm::translate(glm::mat4(1.0f), Xoffset);
+	// Offset from camera
+	localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
-	if (m_mesh != NULL)
+	if (m_mesh != NULL) {
 		m_mesh->Update(localTransform);
-	*/
+	}
+		
 
 	// position of the first planet
 	speed = { .5, .5, .5 };
@@ -272,7 +260,7 @@ void Graphics::Render()
 		m_cube->Render(m_positionAttrib,m_colorAttrib);
 	}*/
 	
-	/*
+	
 	if (m_mesh != NULL) {
 		glUniform1i(m_hasTexture, false);
 		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_mesh->GetModel())))));
@@ -291,7 +279,6 @@ void Graphics::Render()
 			m_mesh->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
 		}
 	}
-	*/
 
 	/*if (m_pyramid != NULL) {
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_pyramid->GetModel()));

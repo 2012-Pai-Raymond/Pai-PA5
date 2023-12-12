@@ -23,8 +23,6 @@ Camera::~Camera()
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
 
-    //std::cout << "Yaw: " << Yaw << std::endl;
-
     float velocity = MovementSpeed * deltaTime;
     if (direction == FORWARD) {
         Position += Front * velocity;
@@ -131,7 +129,7 @@ void Camera::Update() {
     );
 
     //std::cout << Front.x << "|| " << Front.y << "||" << Front.z << std::endl;
-    projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.001f, 10000.0f);
+    projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.01f, 100.0f);
     //view = glm::translate(view, m_speed);
     //view = glm::rotate(view, m_rotSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 }

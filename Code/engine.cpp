@@ -44,9 +44,6 @@ bool Engine::Initialize()
     glfwSetScrollCallback(m_window->getWindow(), scroll_callback);
     glfwSetInputMode(m_window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    spaceship = m_graphics->getSpaceship();
-    m_graphics->getCamera()->setSpaceship(spaceship);
-
     // No errors
     return true;
 }
