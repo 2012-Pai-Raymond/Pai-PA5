@@ -6,31 +6,29 @@ AsteroidMesh::AsteroidMesh()
 	pivotLocation = glm::vec3(0.f, 0.f, 0.f);
 	model = glm::translate(glm::mat4(1.0f), pivotLocation);
 
+	amount = 0;
+	radius = 0.f;
+	offset = 0.f;
+
 	if (!InitBuffers()) {
 		printf("Some buffers not initialized.\n");
 	}
 }
 
-AsteroidMesh::AsteroidMesh(glm::vec3 pivot, const char* fname)
+AsteroidMesh::~AsteroidMesh()
 {
-	loadModelFromFile(fname);
-
-	// Model Set Up
-	angle = 0.0f;
-	pivotLocation = pivot;
-	model = glm::translate(glm::mat4(1.0f), pivotLocation);
-
-	// Buffer Set Up
-	if (!InitBuffers()) {
-		printf("Some buffers not initialized.\n");
-	}
-
-	hasTex = false;
+	Vertices.clear();
+	Indices.clear();
 }
 
-AsteroidMesh::AsteroidMesh(glm::vec3 pivot, const char* fname, const char* tname)
+AsteroidMesh::AsteroidMesh(glm::vec3 pivot, const char* fname, const char* tname, unsigned int amountSet, float radiusSet, float setOffSet)
 {
 	// Vertex Set Up
+
+	amount = amountSet;
+	radius = radiusSet;
+	offset = setOffSet;
+
 	loadModelFromFile(fname);
 
 	// Model Set Up
@@ -44,7 +42,7 @@ AsteroidMesh::AsteroidMesh(glm::vec3 pivot, const char* fname, const char* tname
 	}
 
 	// load texture from file
-	m_texture = new Texture(tname);
+	m_texture = new Texture(tname, TEXTURE);
 	if (m_texture)
 		hasTex = true;
 	else
@@ -60,7 +58,7 @@ void AsteroidMesh::Update(glm::mat4 inmodel)
 
 }
 
-void AsteroidMesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint instMatrixAttribLoc, GLint tcAttribLoc, GLint hasTextureLoc)
+void AsteroidMesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint tcAttribLoc, GLint hasTextureLoc)
 {
 
 	glBindVertexArray(vao);
@@ -86,21 +84,18 @@ void AsteroidMesh::Render(GLint posAttribLoc, GLint colAttribLoc, GLint instMatr
 	glVertexAttribPointer(tcAttribLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IB);
-	glBindVertexArray(0);
 
 	// Bind your Element Array
 	//Gl Enable instance Matrix Location
 	// Render
-	glBindVertexArray(vao);
 	glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(Indices.size()), GL_UNSIGNED_INT, 0, amount);
-	glBindVertexArray(0);
 
-	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(posAttribLoc);
 	glDisableVertexAttribArray(colAttribLoc);
 	glDisableVertexAttribArray(tcAttribLoc);
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
+
 
 	// Disable vertex arrays
 	//glDrawElements(GL_TRIANGLES, Indices.size(), GL_UNSIGNED_INT, 0);
@@ -128,8 +123,8 @@ bool AsteroidMesh::InitBuffers() {
 	glm::mat4* modelMatrices;
 	modelMatrices = new glm::mat4[amount];
 	srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
-	float radius = 75.0;
-	float offset = 15.0f;
+	//float radius = 50.0;
+	//float offset = 10.0f;
 	for (unsigned int i = 0; i < amount; i++)
 	{
 		glm::mat4 model1 = glm::mat4(1.0f);
@@ -153,6 +148,7 @@ bool AsteroidMesh::InitBuffers() {
 
 		// 4. now add to list of matrices
 		modelMatrices[i] = model1;
+
 	}
 
 	unsigned int buffer;

@@ -76,6 +76,14 @@ bool Graphics::Initialize(int width, int height)
 	if (!m_shader->AddAsteroidShader(GL_FRAGMENT_SHADER)) {
 		printf("Asteroid Fragment shader failed to Initialize\n");
 	}
+
+	if (!m_shader->AddSkyBoxShader(GL_VERTEX_SHADER)) {
+		printf("SkyBox Vertex Shader failed to Intitialize\n");
+	}
+
+	if (!m_shader->AddSkyBoxShader(GL_FRAGMENT_SHADER)) {
+		printf("SkyBox Fragment shader failed to Initialize\n");
+	}
 	// Connect the program
 	if (!m_shader->Finalize())
 	{
@@ -89,9 +97,22 @@ bool Graphics::Initialize(int width, int height)
 	}
 
 	// Starship
-	m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
+	//m_mesh = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\SpaceShip-1.obj", ".\\assets\\SpaceShip-1.png");
 
-	m_asteroid = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png");
+	
+	m_skybox = new SkyBox(
+		".\\assets\\SkyBox\\StarSkybox041.png",
+		".\\assets\\SkyBox\\StarSkybox042.png",
+		".\\assets\\SkyBox\\StarSkybox043.png",
+		".\\assets\\SkyBox\\StarSkybox044.png",
+		".\\assets\\SkyBox\\StarSkybox045.png",
+		".\\assets\\SkyBox\\StarSkybox046.png");
+	
+
+	//m_skybox = new SkyBox(".\\assets\\SkyBox\\Galaxy2.jpg");
+	m_asteroid = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png", 2500, 50, 10);
+
+	m_asteroid2 = new AsteroidMesh(glm::vec3(1.0f, -3.0f, 4.0f), ".\\assets\\rock.obj", ".\\assets\\rock.png", 4000, 150, 15);
 	// The Sun
 	m_sphere = new Sphere(64, ".\\assets\\2k_sun.jpg", ".\\assets\\2k_sun-n.jpg");
 	//m_sphere->invertNormals();
@@ -101,10 +122,13 @@ bool Graphics::Initialize(int width, int height)
 	// The moon
 	//m_sphere3 = new Sphere(48, ".\\assets\\2k_moon.jpg");
 
+	Saturn = new Mesh(glm::vec3(1.0, -3.0, 4.0f), ".\\assets\\Saturn_1.obj", ".\\assets\\Saturn_(body).jpg");
 
 	//enable depth testing
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+
+	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 
 	return true;
 }
@@ -122,7 +146,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	modelStack.push(glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0)));  // sun's coordinate
 	localTransform = modelStack.top();		// The sun origin
 	localTransform *= glm::rotate(glm::mat4(1.0f), (float)dt, glm::vec3(0.f, 1.f, 0.f));
-	localTransform *= glm::scale(glm::vec3(.75, .75, .75));
+	localTransform *= glm::scale(glm::vec3(5., 5., 5.));
 	if (m_sphere != NULL)
 		m_sphere->Update(localTransform);
 
@@ -156,12 +180,13 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (m_mesh != NULL)
 		m_mesh->Update(localTransform);
+	*/
 
 	// position of the first planet
-	speed = { 0.5, 0.5, 0.5 };
-	dist = { 6., 0, 6. };
+	speed = { .5, .5, .5 };
+	dist = { 15., 0, 15. };
 	rotVector = { 0.,1.,0. };
-	rotSpeed = { 1., 1., 1. };
+	rotSpeed = { 0.3, 0.3, 0.3};
 	scale = { .5,.5,.5 };
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
@@ -171,6 +196,21 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (m_sphere2 != NULL)
 		m_sphere2->Update(localTransform);
+
+	// position of Saturn
+	speed = { .3, .3, .3 };
+	dist = { 100., 0., 100. };
+	rotVector = { 0.,1.,0. };
+	rotSpeed = { .3, .3, .3 };
+	scale = { .007 ,.007, .007 };
+	localTransform = modelStack.top();				// start with sun's coordinate
+	localTransform *= glm::translate(glm::mat4(1.f),
+		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	modelStack.push(localTransform);
+	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
+	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+	if (Saturn != NULL)
+		Saturn->Update(localTransform);
 
 	// position of the moon
 	/*
@@ -231,7 +271,8 @@ void Graphics::Render()
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_cube->GetModel()));
 		m_cube->Render(m_positionAttrib,m_colorAttrib);
 	}*/
-
+	
+	/*
 	if (m_mesh != NULL) {
 		glUniform1i(m_hasTexture, false);
 		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_mesh->GetModel())))));
@@ -250,12 +291,31 @@ void Graphics::Render()
 			m_mesh->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
 		}
 	}
+	*/
 
 	/*if (m_pyramid != NULL) {
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_pyramid->GetModel()));
 		m_pyramid->Render(m_positionAttrib, m_colorAttrib);
 	}*/
 
+	if (Saturn != NULL) {
+		glUniform1i(m_hasTexture, false);
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * Saturn->GetModel())))));
+		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(Saturn->GetModel()));
+		if (Saturn->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, Saturn->getTextureID());
+			GLuint sampler = m_shader->GetUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 0);
+			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
+			Saturn->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
+		}
+	}
 	GLuint hasN = m_shader->GetUniformLocation("hasNormMap");
 	if (m_sphere != NULL) {
 		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * m_sphere->GetModel())))));
@@ -354,10 +414,38 @@ void Graphics::Render()
 			glUniform1i(sampler, 0);
 			glUseProgram(m_shader->GetAstShaderProgram());
 			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
-			m_asteroid->Render(m_astPositionAttribLoc, m_astNormalAttribLoc, m_astInstMatrixAttribLoc,m_astTcAttribLoc, m_astHasTexture);
+			m_asteroid->Render(m_astPositionAttribLoc, m_astNormalAttribLoc,m_astTcAttribLoc, m_astHasTexture);
 		}
 	}
 	
+	if (m_asteroid2 != NULL) {
+		glUniform1i(m_astHasTexture, false);
+		if (m_asteroid2->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_asteroid2->getTextureID());
+			GLuint sampler = m_shader->GetAsUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUniform1i(sampler, 0);
+			glUseProgram(m_shader->GetAstShaderProgram());
+			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
+			m_asteroid2->Render(m_astPositionAttribLoc, m_astNormalAttribLoc, m_astTcAttribLoc, m_astHasTexture);
+		}
+	}
+
+	
+	glDepthFunc(GL_LEQUAL);
+	m_shader->SkyBoxEnable();
+
+	glUniformMatrix4fv(m_sbViewMatrix, 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(m_camera->GetView()))));
+	glUniformMatrix4fv(m_sbProjectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection()));
+	if (m_skybox != NULL) {
+		glUniform1i(m_shader->GetSbUniformLocation("skybox"), 0);
+		m_skybox->Render();
+	}
+	glDepthFunc(GL_LESS);
 
 	// Get any errors from OpenGL
 	auto error = glGetError();
@@ -526,14 +614,25 @@ bool Graphics::collectShPrLocs() {
 		printf("m_astTcAttribLoc not found\n");
 		anyProblem = false;
 	}
+   
+	//=================== SkyBox Setup ========================
 
-	/*
-	m_hasTexNorm = m_shader->GetUniformLocation("hasNormalMap");
-	if (m_hasTexture == INVALID_UNIFORM_LOCATION) {
-		printf("hasNormalMap uniform not found\n");
+	//m_shader->SkyBoxEnable();
+	//glUniform1i(m_shader->GetSbUniformLocation("skybox"), 0);
+
+	m_sbProjectionMatrix = m_shader->GetSbUniformLocation("projection");
+	if (m_sbProjectionMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_sbProjectionMatrix not found\n");
 		anyProblem = false;
 	}
-	*/
+
+	m_sbViewMatrix = m_shader->GetSbUniformLocation("view");
+	if (m_sbViewMatrix == INVALID_UNIFORM_LOCATION)
+	{
+		printf("m_sbViewMatrix not found\n");
+		anyProblem = false;
+	}
 
 	GLuint globalAmbLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "GlobalAmbient");
 	if (globalAmbLoc == INVALID_UNIFORM_LOCATION)
