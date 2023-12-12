@@ -22,19 +22,28 @@ Camera::~Camera()
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
+
+    //std::cout << "Yaw: " << Yaw << std::endl;
+
     float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD)
+    if (direction == FORWARD) {
         Position += Front * velocity;
-    if (direction == BACKWARD)
+    }
+    if (direction == BACKWARD) {
         Position -= Front * velocity;
-    if (direction == LEFT)
+    }
+    if (direction == LEFT) {
         Position -= Right * velocity;
-    if (direction == RIGHT)
+    }
+    if (direction == RIGHT) {
         Position += Right * velocity;
-    if (direction == UP)
+    }
+    if (direction == UP) {
         Position += Up * velocity;
-    if (direction == DOWN)
+    }
+    if (direction == DOWN) {
         Position -= Up * velocity;
+    }
 }
 
 void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) {
@@ -84,6 +93,13 @@ bool Camera::Initialize(int w, int h)
         100.0f); //Distance to the far plane, 
     width = w;
     height = h;
+
+    glm::vec3 scale = { .01,.01,.01 };
+    glm::vec3 offsetY = { 0, -5, 0 };
+    localTransform = glm::translate(glm::mat4(1.0f), offsetY);
+    localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+    
+
     return true;
 }
 
@@ -115,7 +131,7 @@ void Camera::Update() {
     );
 
     //std::cout << Front.x << "|| " << Front.y << "||" << Front.z << std::endl;
-    projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.01f, 100.0f);
+    projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.001f, 100.0f);
     //view = glm::translate(view, m_speed);
     //view = glm::rotate(view, m_rotSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 }

@@ -51,6 +51,10 @@ public:
 
     glm::vec3 getPosition() { return Position; }
     glm::vec3 getFront() { return Front;  }
+    float getYaw() { return Yaw; }
+    float getLocalYaw() { return abs(std::fmod(Yaw, 360.0f)); }
+    float getPitch() { return Pitch; }
+    float getLocalPitch() { return std::fmod(Pitch, 360.0f); }
 
     void setSpaceship(Mesh* nave) { spaceship = nave; }
 
@@ -58,6 +62,7 @@ private:
     glm::mat4 projection;
     glm::mat4 view;
     glm::vec3 m_speed = glm::vec3(0., 0., 0.);
+    glm::mat4 localTransform = glm::mat4(1.0f);
     float m_rotSpeed = 0.0f;
 
     int width;
@@ -65,6 +70,8 @@ private:
     void updateCameraVectors();
 
     Mesh* spaceship;
+
+
 };
 
 #endif /* CAMERA_H */

@@ -1,6 +1,7 @@
 #ifndef GRAPHICS_HEADERS_H
 #define GRAPHICS_HEADERS_H
 
+#include <cmath>
 #include <iostream>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>

@@ -127,17 +127,32 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		m_sphere->Update(localTransform);
 
 
-	speed = { 1.0, 1.0, 1.0 };
-	dist = { 0., 3., 3. };
-	rotVector = { 1.,0.,0. };
-	rotSpeed = { 0., 1., 1. };
+	//speed = { 1.0, 1.0, 1.0 };
+	//dist = { 0., 3., 3. };
+	//rotVector = { 1.,0.,0. };
+	//rotSpeed = { 0., 1., 1. };
 	scale = { .01,.01,.01 };
-	localTransform = modelStack.top();				// start with sun's coordinate
-	//localTransform *= glm::inverse(glm::lookAt(glm::vec3(0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0, 1, 0)));
-	localTransform *= glm::translate(glm::mat4(1.f),
-		glm::vec3(cos(speed[0] * dt) * dist[0], -sin(speed[1] * dt) * dist[1], cos(speed[2] * dt) * dist[2]));
-	//localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
-	localTransform *= glm::rotate(glm::mat4(1.f), 0.f, rotVector);
+	float rotationOffset = 90.0f;
+	glm::vec3 Yoffset = { 0, -0.5f, 0 };
+	glm::vec3 Xoffset = { 0 , 0, 1.1f };
+	
+	glm::vec3 Yrotater = glm::rotateX(Yoffset, glm::radians(-m_camera->getPitch()));
+	glm::vec3 Xrotater = glm::rotateY(Xoffset, glm::radians(-m_camera->getYaw()));
+
+	//std::cout << "Vector: " << Yoffset.x << " " << Yoffset.y << " " << Yoffset.z << std::endl;
+	//std::cout << "Length: " << glm::length(Yoffset) << std::endl;
+	//std::cout << "Pitch: " << m_camera->getPitch() << std::endl;
+
+
+	localTransform = modelStack.top(); // start with sun's position
+	localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position (to camera's)
+	// Rotations
+	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
+	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
+	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
+	// Move down and forward
+	localTransform *= glm::translate(glm::mat4(1.0f), Yoffset);
+	localTransform *= glm::translate(glm::mat4(1.0f), Xoffset);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (m_mesh != NULL)
 		m_mesh->Update(localTransform);
