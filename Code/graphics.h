@@ -81,7 +81,10 @@ private:
     SkyBox* m_skybox;
 
     Mesh* m_mesh;
-    Mesh* Saturn;
+    Sphere* Saturn;
+    Sphere* Ring;
+    Sphere* Jupiter;
+
     AsteroidMesh* m_asteroid;
     AsteroidMesh* m_asteroid2;
 

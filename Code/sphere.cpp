@@ -83,7 +83,7 @@ void Sphere::Render(GLint positionAttribLoc, GLint colorAttribLoc)
 void Sphere::Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, GLint nmAttribLoc, GLint hasTextureLoc, GLint hasTexNormalLoc)
 {
     glBindVertexArray(vao);
-     // Enable vertex attibute arrays for each vertex attrib
+    // Enable vertex attibute arrays for each vertex attrib
     glEnableVertexAttribArray(posAttribLoc);
     glEnableVertexAttribArray(normAttribLoc);
     glEnableVertexAttribArray(tcAttribLoc);
@@ -206,7 +206,7 @@ void Sphere::init(int prec) {
             float z = (float)sin(toRadians(j * 360.f / prec)) * (float)abs(cos(asin(y)));
             vertices[i * (prec + 1) + j] = glm::vec3(x, y, z);
             texCoords[i * (prec + 1) + j] = glm::vec2(((float)j / prec), ((float)i / prec));
-            normals[i * (prec + 1) + j] = glm::normalize(glm::vec3(x, y, z));
+            normals[i * (prec + 1) + j] = glm::vec3(x, y, z);
         }
     }
 

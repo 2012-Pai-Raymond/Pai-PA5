@@ -139,7 +139,7 @@ bool AsteroidMesh::InitBuffers() {
 		model1 = glm::translate(model1, glm::vec3(x, y, z));
 
 		// 2. scale: Scale between 0.05 and 0.25f
-		float scale = static_cast<float>((rand() % 20) / 100.0 + 0.05);
+		float scale = static_cast<float>((rand() % 15) / 100.0 + 0.05);
 		model1 = glm::scale(model1, glm::vec3(scale));
 
 		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector

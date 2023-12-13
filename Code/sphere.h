@@ -1,3 +1,6 @@
+#ifndef SPHERE_H
+#define SPHERE_H
+
 #include "object.h"
 #include "Texture.h"
 
@@ -9,6 +12,7 @@ public:
 
 
     void Render(GLint positionAttribLoc, GLint colorAttribLoc);
+    void Render(GLint positionAttribLoc, GLint colorAttribLoc, GLint tcAttribLoc, GLint hasTextureLoc);
     void Render(GLint posAttribLoc, GLint normAttribLoc, GLint tcAttribLoc, GLint nmAttribLoc, GLint hasTextureLoc, GLint hasTexNormalLoc);
 
     glm::mat4 GetModel() { return model; }
@@ -69,3 +73,4 @@ private:
  
 
 };
+#endif
