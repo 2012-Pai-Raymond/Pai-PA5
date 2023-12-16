@@ -72,6 +72,8 @@ private:
     GLint m_sbProjectionMatrix;
     GLint m_sbViewMatrix;
 
+
+    //Sun, Earth, Moon
     Sphere* m_sphere;
     Sphere* m_sphere2;
     Sphere* m_sphere3;
@@ -81,10 +83,15 @@ private:
     SkyBox* m_skybox;
 
     Mesh* m_mesh;
+    Sphere* Mercury;
+    Sphere* Venus;
+    Sphere* Mars;
     Sphere* Saturn;
     Sphere* Ring;
     Sphere* Jupiter;
-
+    Sphere* Uranus;
+    Sphere* Neptune;
+    //Asteroid Belts
     AsteroidMesh* m_asteroid;
     AsteroidMesh* m_asteroid2;
 

@@ -19,7 +19,7 @@ Light::Light(glm::mat4 viewMatrix, glm::vec4 lightAmb, glm::vec4 lightDiff, glm:
 	m_lightAmbient[0] = lightAmb[0];
 	m_lightAmbient[1] = lightAmb[1];
 	m_lightAmbient[2] = lightAmb[2];
-	m_lightAmbient[3] = lightAmb[2];
+	m_lightAmbient[3] = lightAmb[3];
 
 	m_lightDiffuse[0] = lightDiff[0];
 	m_lightDiffuse[1] = lightDiff[1];

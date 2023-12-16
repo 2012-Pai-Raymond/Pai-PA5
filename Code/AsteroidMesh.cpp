@@ -123,8 +123,6 @@ bool AsteroidMesh::InitBuffers() {
 	glm::mat4* modelMatrices;
 	modelMatrices = new glm::mat4[amount];
 	srand(static_cast<unsigned int>(glfwGetTime())); // initialize random seed
-	//float radius = 50.0;
-	//float offset = 10.0f;
 	for (unsigned int i = 0; i < amount; i++)
 	{
 		glm::mat4 model1 = glm::mat4(1.0f);
