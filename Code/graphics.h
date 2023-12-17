@@ -85,6 +85,7 @@ private:
     SkyBox* m_skybox;
 
     Mesh* m_mesh;
+    Mesh* Haley;
     Sphere* Mercury;
     Sphere* Venus;
     Sphere* Mars;

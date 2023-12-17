@@ -151,6 +151,10 @@ bool Graphics::Initialize(int width, int height)
 
 	//Haumea
 	Haumea = new Sphere(48, ".\\assets\\Haumea.jpg", ".\\assets\\Haumea-n.jpg");
+
+	//Haley
+	Haley = new Mesh(glm::vec3(2.0f, 3.0f, -5.0f), ".\\assets\\rock.obj", ".\\assets\\comet_texture.jpg");
+
 	//enable depth testing
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -222,6 +226,20 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		}
 	}
 
+
+	//position of Haley's comet
+	speed = { .2f, .2f, .2f };
+	dist = { 40., 0, 220. };
+	rotVector = { 0.,1.,0. };
+	rotSpeed = { 0.3, 0.3, 0.3 };
+	scale = { .15, .15, .15 };
+	localTransform = glm::translate(glm::mat4(1.f), glm::vec3(0., 0., 200.));
+	localTransform *= glm::translate(glm::mat4(1.f),
+		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
+	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+	if (Haley != NULL)
+		Haley->Update(localTransform);
 
 	//position of Mercury
 	speed = { .65f, .65f, .65f };
@@ -473,6 +491,24 @@ void Graphics::Render()
 		}
 	}
 
+	if (Haley != NULL) {
+		glUniform1i(m_hasTexture, false);
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * Haley->GetModel())))));
+		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(Haley->GetModel()));
+		if (Haley->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, Haley->getTextureID());
+			GLuint sampler = m_shader->GetUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 0);
+			//m_mesh->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_hasTexture);
+			Haley->Render(m_positionAttrib, m_normAttrib, m_tcAttrib, m_hasTexture);
+		}
+	}
 	/*if (m_pyramid != NULL) {
 		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(m_pyramid->GetModel()));
 		m_pyramid->Render(m_positionAttrib, m_colorAttrib);
