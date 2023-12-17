@@ -193,7 +193,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	else if (m_camera->getGamemode() == OBSERVATION) { // Save ship position and stop rendering it
 		// Implement Functionality
 	}
-	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship
+	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship)
 		if (m_mesh != NULL) {
 			m_mesh->Update(shipTransform);
 		}

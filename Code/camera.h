@@ -62,6 +62,7 @@ public:
 
     void changeMovementSpeed(bool incOrDec, float amount, float deltaTime);
     void setGear(Speedmodes changeTo);
+    void boosting(bool willBoost);
 
     void changeGamemode(Gamemodes gc);
     Gamemodes getGamemode() { return gamemodeType; }
@@ -77,6 +78,9 @@ private:
     glm::mat4 view;
     glm::vec3 m_speed = glm::vec3(0., 0., 0.);
     glm::mat4 localTransform = glm::mat4(1.0f);
+
+    float boostSpeed;
+    bool isBoosting = false;
     float m_rotSpeed = 0.0f;
 
     int width;
