@@ -11,6 +11,18 @@ enum Camera_Movement {
     DOWN
 };
 
+enum Gamemodes {
+    SPECTATOR,
+    EXPLORATION,
+    OBSERVATION
+};
+
+enum Speedmodes {
+    BRAKE,
+    NORMAL,
+    LUDICROUS
+};
+
 const float YAW = -90.0f;
 const float PITCH = -30.0f;
 const float SPEED = 30.f;
@@ -33,6 +45,8 @@ public:
     float MouseSensitivity;
     float Zoom;
 
+    Gamemodes gamemodeType = EXPLORATION;
+
     Camera();
     ~Camera();
     bool Initialize(int w, int h);
@@ -45,6 +59,12 @@ public:
 
     void setSpeed(glm::vec3 spd) { m_speed = spd; }
     void setRotation(float rotSpd) { m_rotSpeed = rotSpd; }
+
+    void changeMovementSpeed(bool incOrDec, float amount, float deltaTime);
+    void setGear(Speedmodes changeTo);
+
+    void changeGamemode(Gamemodes gc);
+    Gamemodes getGamemode() { return gamemodeType; }
 
     void Update();
 

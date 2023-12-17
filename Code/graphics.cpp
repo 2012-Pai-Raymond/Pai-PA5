@@ -168,24 +168,32 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	if (m_sphere != NULL)
 		m_sphere->Update(localTransform);
 
-
 	// Spaceship
-	scale = { .01,.01,.01 };
-	glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
-	float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
+	if (m_camera->gamemodeType == EXPLORATION) // If we're in exploration mode, put the ship in front of the camera
+	{
+		std::cout << "Code Running" << std::endl;
+		scale = { .01,.01,.01 };
+		glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
+		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
 
-	localTransform = modelStack.top(); // start with sun's position
-	localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
-	// Rotations
-	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
-	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
-	localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
-	// Offset from camera
-	localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
-	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
-	if (m_mesh != NULL) {
-		m_mesh->Update(localTransform);
+		localTransform = modelStack.top(); // start with sun's position
+		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
+		// Rotations
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
+		// Offset from camera
+		localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
+		localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+		if (m_mesh != NULL) {
+			m_mesh->Update(localTransform);
+		}
+		shipTransform = localTransform;
 	}
+	else { // Otherwise, save the current ship position and then don't keep moving it.
+		std::cout << "Code NOT Running" << std::endl;
+	}
+
 
 	//position of Mercury
 	speed = { .65f, .65f, .65f };
