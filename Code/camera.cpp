@@ -7,6 +7,7 @@ Camera::Camera()
     Front = glm::vec3(0.0, 0.0, 0.0);
 
     MovementSpeed = SPEED;
+    boostSpeed = SPEED;
     Pitch = PITCH;
     Yaw = YAW;
     MouseSensitivity = SENSITIVITY;
@@ -22,8 +23,9 @@ Camera::~Camera()
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
-
     float velocity = MovementSpeed * deltaTime;
+    if (isBoosting) velocity = boostSpeed * deltaTime;
+
     if (direction == FORWARD) {
         Position += Front * velocity;
     }
@@ -186,5 +188,16 @@ void Camera::changeGamemode(Gamemodes gc) {
         default:
             std::cout << "Invalid type specified" << std::endl;
             break;
+    }
+}
+
+void Camera::boosting(bool willBoost) {
+    if (willBoost) {
+        boostSpeed = MovementSpeed + 100;
+        isBoosting = true;
+    }
+    else {
+        boostSpeed = MovementSpeed;
+        isBoosting = false;
     }
 }

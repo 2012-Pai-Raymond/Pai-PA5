@@ -6,6 +6,8 @@ Up Key - Speed up
 
 Down Key - Speed down
 
+Left Shift - Boost speed
+
 B - Brake
 
 N - Set speed back to default

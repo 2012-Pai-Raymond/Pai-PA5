@@ -111,6 +111,10 @@ void Engine::ProcessInput(float deltaTime)
         m_graphics->getCamera()->changeMovementSpeed(true, 2, deltaTime);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
         m_graphics->getCamera()->changeMovementSpeed(false, 2, deltaTime);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        m_graphics->getCamera()->boosting(true);
+    else
+        m_graphics->getCamera()->boosting(false);
     // Braking
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
         m_graphics->getCamera()->setGear(BRAKE);
