@@ -40,6 +40,7 @@ private:
         glm::mat4& tmat, glm::mat4& rmat, glm::mat4& smat);
 
     stack<glm::mat4> modelStack;
+    glm::mat4 shipTransform;
 
     Camera* m_camera;
     Shader* m_shader;

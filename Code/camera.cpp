@@ -128,9 +128,65 @@ void Camera::Update() {
         WorldUp
     );
 
+    //Position = glm::rotateX(Position, glm::radians(0.1f));
+    //WorldUp = glm::rotateX(WorldUp, glm::radians(0.1f));
+
+
     //std::cout << Front.x << "|| " << Front.y << "||" << Front.z << std::endl;
     projection = glm::perspective(glm::radians(Zoom), float(width) / float(height), 0.01f, 10000.0f);
     //view = glm::translate(view, m_speed);
     //view = glm::rotate(view, m_rotSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
+void Camera::changeMovementSpeed(bool incOrDec, float amount, float deltaTime) {
+    amount *= 10;
+    float deltaSpeed = amount * deltaTime;
+    if (incOrDec) {
+        MovementSpeed += deltaSpeed;
+    }
+    else {
+        if ((MovementSpeed -= deltaSpeed) < 5)
+            MovementSpeed = 5;
+        else
+            MovementSpeed -= deltaSpeed;
+    }
+}
+
+void Camera::setGear(Speedmodes changeTo) {
+    switch (changeTo) {
+        case BRAKE:
+            MovementSpeed = 0;
+            break;
+        case NORMAL:
+            MovementSpeed = SPEED;
+            break;
+        case LUDICROUS:
+            MovementSpeed = 200;
+            break;
+        default:
+            std::cout << "Invalid speed type" << std::endl;
+            break;
+    }
+}
+
+void Camera::changeGamemode(Gamemodes gc) {
+    switch (gc) {
+        case SPECTATOR:
+            gamemodeType = SPECTATOR;
+            std::cout << "SPECTATOR" << std::endl;
+            break;
+        case EXPLORATION:
+            gamemodeType = EXPLORATION;
+            std::cout << "EXPLORATION" << std::endl;
+            break;
+        case OBSERVATION:
+            gamemodeType = OBSERVATION;
+            std::cout << "OBSERVATION" << std::endl;
+            break;
+        default:
+            std::cout << "Invalid type" << std::endl;
+            break;
+    }
+
+    //std::cout << "Mode: " << gamemodeType << std::endl;
+}

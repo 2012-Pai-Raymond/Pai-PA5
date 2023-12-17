@@ -83,10 +83,17 @@ void Engine::Run()
 
 void Engine::ProcessInput(float deltaTime)
 {
-
+    // Gameplay
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(m_window->getWindow(), true);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_G) == GLFW_PRESS)
+        m_graphics->getCamera()->changeGamemode(SPECTATOR);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_H) == GLFW_PRESS)
+        m_graphics->getCamera()->changeGamemode(EXPLORATION);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_J) == GLFW_PRESS)
+        m_graphics->getCamera()->changeGamemode(OBSERVATION);
 
+    // Movement
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
         m_graphics->getCamera()->ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_S) == GLFW_PRESS)
@@ -99,6 +106,20 @@ void Engine::ProcessInput(float deltaTime)
         m_graphics->getCamera()->ProcessKeyboard(DOWN, deltaTime);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
         m_graphics->getCamera()->ProcessKeyboard(UP, deltaTime);
+    // Speed up & speed down
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_UP) == GLFW_PRESS)
+        m_graphics->getCamera()->changeMovementSpeed(true, 2, deltaTime);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
+        m_graphics->getCamera()->changeMovementSpeed(false, 2, deltaTime);
+    // Braking
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_B) == GLFW_PRESS)
+        m_graphics->getCamera()->setGear(BRAKE);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_N) == GLFW_PRESS)
+        m_graphics->getCamera()->setGear(NORMAL);
+    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_L) == GLFW_PRESS) // Yes, this is a Spaceballs reference
+        m_graphics->getCamera()->setGear(LUDICROUS);
+
+
 
     cursor_position_callback(m_window->getWindow(), xpos, ypos);
     cursor_scroll_callback(m_window->getWindow(), xoffset, yoffset);
