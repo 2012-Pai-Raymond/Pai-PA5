@@ -171,24 +171,28 @@ void Camera::setGear(Speedmodes changeTo) {
     }
 }
 
-void Camera::changeGamemode(Gamemodes gc) {
-    switch (gc) {
-        case DEV:
-            gamemodeType = DEV;
-            MovementSpeed = 100;
-            break;
-        case EXPLORATION:
-            gamemodeType = EXPLORATION;
-            MovementSpeed = SPEED;
-            break;
-        case OBSERVATION:
-            gamemodeType = OBSERVATION;
-            MovementSpeed = SPEED;
-            break;
-        default:
-            std::cout << "Invalid type specified" << std::endl;
-            break;
+void Camera::toggleGamemode() {
+    glm::vec3 cameraMoveOffset = { 0, -1.1f, -0.5f };
+    if (gamemodeType == DEV) { // Set to exploration
+        gamemodeType = EXPLORATION;
+        MovementSpeed = SPEED;
+        addPosition(-cameraMoveOffset);
     }
+    else if (gamemodeType == EXPLORATION) { // Set to Observation
+        gamemodeType = OBSERVATION;
+        MovementSpeed = SPEED;
+        addPosition(cameraMoveOffset);
+    }
+    else if (gamemodeType == OBSERVATION) { // Set to 
+        gamemodeType = EXPLORATION;
+        MovementSpeed = SPEED;
+        addPosition(-cameraMoveOffset);
+    }
+}
+
+void Camera::toggleDevMode() {
+    gamemodeType = DEV;
+    MovementSpeed = 100;
 }
 
 void Camera::boosting(bool willBoost) {
@@ -200,4 +204,8 @@ void Camera::boosting(bool willBoost) {
         boostSpeed = MovementSpeed;
         isBoosting = false;
     }
+}
+
+void Camera::addPosition(glm::vec3 pos) {
+    Position += pos;
 }

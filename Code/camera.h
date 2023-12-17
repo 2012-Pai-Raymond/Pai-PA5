@@ -45,7 +45,7 @@ public:
     float MouseSensitivity;
     float Zoom;
 
-    Gamemodes gamemodeType = DEV;
+    Gamemodes gamemodeType = EXPLORATION;
 
     Camera();
     ~Camera();
@@ -64,12 +64,14 @@ public:
     void setGear(Speedmodes changeTo);
     void boosting(bool willBoost);
 
-    void changeGamemode(Gamemodes gc);
+    void toggleGamemode();
+    void toggleDevMode();
     Gamemodes getGamemode() { return gamemodeType; }
 
     void Update();
 
     glm::vec3 getPosition() { return Position; }
+    void addPosition(glm::vec3 pos);
     glm::vec3 getFront() { return Front;  }
     float getYaw() { return Yaw; }
     float getPitch() { return Pitch; }

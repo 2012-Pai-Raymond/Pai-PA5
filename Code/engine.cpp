@@ -55,6 +55,7 @@ bool Engine::Initialize()
     //glfwSetCursorPosCallback(m_window->getWindow(), cursorPositionCallBack);
 
     glfwSetScrollCallback(m_window->getWindow(), scroll_callback);
+    glfwSetKeyCallback(m_window->getWindow(), key_callback);
     glfwSetInputMode(m_window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(MessageCallback, 0);
@@ -86,12 +87,8 @@ void Engine::ProcessInput(float deltaTime)
     // Gameplay
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(m_window->getWindow(), true);
-    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_G) == GLFW_PRESS)
-        m_graphics->getCamera()->changeGamemode(DEV);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_H) == GLFW_PRESS)
-        m_graphics->getCamera()->changeGamemode(EXPLORATION);
-    if (glfwGetKey(m_window->getWindow(), GLFW_KEY_J) == GLFW_PRESS)
-        m_graphics->getCamera()->changeGamemode(OBSERVATION);
+        m_graphics->getCamera()->toggleDevMode();
 
     // Movement
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_W) == GLFW_PRESS)
@@ -127,6 +124,7 @@ void Engine::ProcessInput(float deltaTime)
 
     cursor_position_callback(m_window->getWindow(), xpos, ypos);
     cursor_scroll_callback(m_window->getWindow(), xoffset, yoffset);
+
     /*if (glfwGetKey(m_window->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(m_window->getWindow(), true);
 
@@ -217,4 +215,10 @@ void Engine::Display(GLFWwindow* window, double time) {
 }*/
 void Engine::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     m_graphics->getCamera()->ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
+void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
+        m_graphics->getCamera()->toggleGamemode();
 }
