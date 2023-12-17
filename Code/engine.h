@@ -25,6 +25,7 @@ public:
 
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
     void cursor_scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 private:
     // Window related variables

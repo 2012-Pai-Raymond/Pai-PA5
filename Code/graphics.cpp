@@ -169,14 +169,15 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		m_sphere->Update(localTransform);
 
 	// Spaceship
-	if (m_camera->getGamemode() == EXPLORATION || firstBoot) // If we're in exploration mode, put the ship in front of the camera
-	{
+	scale = { .01,.01,.01 };
+	glm::vec3 cameraMoveOffset = { 0, -1.1f, -0.5f };
+	localTransform = modelStack.top(); // start with sun's position
+	if (m_camera->getGamemode() == EXPLORATION || firstBoot) { // If we're in exploration mode, put the ship in front of the camera
 		firstBoot = false;
-		scale = { .01,.01,.01 };
+
 		glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
 		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
 
-		localTransform = modelStack.top(); // start with sun's position
 		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
 		// Rotations
 		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
@@ -191,7 +192,20 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		shipTransform = localTransform;
 	}
 	else if (m_camera->getGamemode() == OBSERVATION) { // Save ship position and stop rendering it
-		// Implement Functionality
+		glm::vec3 offsetFromCamera = { 0, -0.2f, -0.5f }; // z cord moves ship forward
+		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
+
+		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
+		// Rotations
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
+		// Offset from camera
+		localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
+		localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+		if (m_mesh != NULL) {
+			m_mesh->Update(localTransform);
+		}
 	}
 	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship)
 		if (m_mesh != NULL) {

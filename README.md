@@ -14,11 +14,9 @@ N - Set speed back to default
 
 L - Speed speed to high value
 #### Gamemode Selection
-G - Dev Mode (Default)
+G - Toggle between Exploration & Observation mode
 
-H - Exploration Mode
-
-J - Observation Mode
+H - Toggle Dev mode
 
 ESC - Quit application
 
