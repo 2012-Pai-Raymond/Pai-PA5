@@ -93,6 +93,9 @@ private:
     Sphere* Jupiter;
     Sphere* Uranus;
     Sphere* Neptune;
+    Sphere* Ceres;
+    Sphere* Eris;
+    Sphere* Haumea;
     //Asteroid Belts
     AsteroidMesh* m_asteroid;
     AsteroidMesh* m_asteroid2;

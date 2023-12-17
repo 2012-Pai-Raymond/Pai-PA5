@@ -142,6 +142,15 @@ bool Graphics::Initialize(int width, int height)
 
 	//Neptune
 	Neptune = new Sphere(64, ".\\assets\\Neptune.jpg", ".\\assets\\Neptune-n.jpg");
+
+	//Ceres
+	Ceres = new Sphere(48, ".\\assets\\Ceres.jpg", ".\\assets\\Ceres-n.jpg");
+
+	//Eris
+	Eris = new Sphere(48, ".\\assets\\Eris.jpg", ".\\assets\\Eris-n.jpg");
+
+	//Haumea
+	Haumea = new Sphere(48, ".\\assets\\Haumea.jpg", ".\\assets\\Haumea-n.jpg");
 	//enable depth testing
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -294,9 +303,24 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	if (Mars != NULL)
 		Mars->Update(localTransform);
 
+	//Position of Ceres 
+	speed = { .14f, .14f, .14f };
+	dist = { 190., 0, 190. };
+	rotVector = { 0.,1.,0. };
+	rotSpeed = { 0.3, 0.3, 0.3 };
+	scale = { 0.8, 0.8 , 0.8 };
+	localTransform = modelStack.top();				// start with sun's coordinate
+	localTransform *= glm::translate(glm::mat4(1.f),
+		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(4.f), glm::vec3(0.0, 0.0, 1.f));
+	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
+	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+	if (Ceres != NULL)
+		Ceres->Update(localTransform);
+
 	//Position of Jupiter
 
-	speed = { .15f, .15f, .15f };
+	speed = { .12f, .12f, .12f };
 	dist = { 250., 0., 250. };
 	rotVector = { 0.,1.,0. };
 	rotSpeed = { .3, .3, .3 };
@@ -372,6 +396,36 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (Neptune != NULL)
 		Neptune->Update(localTransform);
+
+	//position of Eris
+	speed = { .02f, .02f, .02f };
+	dist = { 400., 0., 800. };
+	rotVector = { 0.,1.,0. };
+	rotSpeed = { .3, .3, .3 };
+	scale = { 1.2 , 1.2, 1.2 };
+	localTransform = glm::translate(glm::mat4(1.f), glm::vec3(-10.0, 0.0, 150.0));
+	localTransform *= glm::translate(glm::mat4(1.f),
+		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(30.f), glm::vec3(0.0, 0., 1.));
+	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
+	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+	if (Eris != NULL)
+		Eris->Update(localTransform);
+
+	//position of Haumea
+	speed = { .018f, 0.18f, .018f };
+	dist = { 600., 0., 800. };
+	rotVector = { 0.,1.,0. };
+	rotSpeed = { .3, .3, .3 };
+	scale = { 1. , 0.5, 1. };
+	localTransform = glm::translate(glm::mat4(1.f), glm::vec3(-10.0, 0.0, -150.0));
+	localTransform *= glm::translate(glm::mat4(1.f),
+		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(4.f), glm::vec3(0.0, 0., 1.));
+	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
+	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+	if (Haumea != NULL)
+		Haumea->Update(localTransform);
 
 	modelStack.pop();	// empy stack
 }
@@ -615,6 +669,36 @@ void Graphics::Render()
 		Mars->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
 	}
 
+	//Ceres
+	if (Ceres != NULL) {
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * Ceres->GetModel())))));
+		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(Ceres->GetModel()));
+		if (Ceres->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, Ceres->getTextureID());
+			GLuint sampler = m_shader->GetUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 0);
+			glUniform1i(hasN, false);
+		}
+		if (Ceres->hasTexNorm) {
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, Ceres->getTexNormalID());
+			GLuint sampler = m_shader->GetUniformLocation("sp1");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 1);
+			glUniform1i(hasN, true);
+		}
+		Ceres->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
+	}
 	// Jupiter
 	if (Jupiter != NULL) {
 		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * Jupiter->GetModel())))));
@@ -775,6 +859,71 @@ void Graphics::Render()
 
 		Neptune->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
 	}
+
+	//Eris
+	if (Eris != NULL) {
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView()* Eris->GetModel())))));
+		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(Eris->GetModel()));
+		if (Eris->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, Eris->getTextureID());
+			GLuint sampler = m_shader->GetUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 0);
+			glUniform1i(hasN, false);
+		}
+
+		if (Eris->hasTexNorm) {
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, Eris->getTexNormalID());
+			GLuint sampler = m_shader->GetUniformLocation("sp1");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUniform1i(sampler, 1);
+			glUniform1i(hasN, true);
+		}
+
+		Eris->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
+	}
+
+	//Haumea
+	if (Haumea != NULL) {
+		glUniformMatrix3fv(m_normalMatrix, 1, GL_FALSE, glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(m_camera->GetView() * Haumea->GetModel())))));
+		glUniformMatrix4fv(m_modelMatrix, 1, GL_FALSE, glm::value_ptr(Haumea->GetModel()));
+		if (Haumea->hasTex) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, Haumea->getTextureID());
+			GLuint sampler = m_shader->GetUniformLocation("sp");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUseProgram(m_shader->GetShaderProgram());
+			glUniform1i(sampler, 0);
+			glUniform1i(hasN, false);
+		}
+
+		if (Haumea->hasTexNorm) {
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, Haumea->getTexNormalID());
+			GLuint sampler = m_shader->GetUniformLocation("sp1");
+			if (sampler == INVALID_UNIFORM_LOCATION)
+			{
+				printf("Sampler Not found not found\n");
+			}
+			glUniform1i(sampler, 1);
+			glUniform1i(hasN, true);
+		}
+
+		Haumea->Render(m_positionAttrib, m_colorAttrib, m_tcAttrib, m_texNormalAttrib, m_hasTexture, m_hasTexNorm);
+	}
+	//Asteroid Shader Enable
 	m_shader->AsteroidEnable();
 
 	glUniformMatrix4fv(m_astProjectionMatrix, 1, GL_FALSE, glm::value_ptr(m_camera->GetProjection()));
@@ -816,6 +965,7 @@ void Graphics::Render()
 	}
 
 
+	//Skybox Shader Enable
 	glDepthFunc(GL_LEQUAL);
 	m_shader->SkyBoxEnable();
 
@@ -1048,7 +1198,7 @@ bool Graphics::collectShPrLocs() {
 
 
 	GLuint lightPosLoc = glGetUniformLocation(m_shader->GetShaderProgram(), "light.position");
-	glProgramUniform3fv(m_shader->GetShaderProgram(), lightPosLoc, 1, glm::value_ptr(m_light->m_lightPositionViewSpace));
+	glProgramUniform3fv(m_shader->GetShaderProgram(), lightPosLoc, 1, glm::value_ptr(m_light->m_lightPosition));
 
 	float matAmbient[4] = { 0.5, 0.5, 0.5, 1. };
 	float matDiff[4] = { 0.15, 0.15, 0.15, 1.0 };
