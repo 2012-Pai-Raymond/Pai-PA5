@@ -12,7 +12,7 @@ enum Camera_Movement {
 };
 
 enum Gamemodes {
-    SPECTATOR,
+    DEV,
     EXPLORATION,
     OBSERVATION
 };
@@ -45,7 +45,7 @@ public:
     float MouseSensitivity;
     float Zoom;
 
-    Gamemodes gamemodeType = EXPLORATION;
+    Gamemodes gamemodeType = DEV;
 
     Camera();
     ~Camera();

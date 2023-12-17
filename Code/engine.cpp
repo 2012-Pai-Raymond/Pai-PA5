@@ -87,7 +87,7 @@ void Engine::ProcessInput(float deltaTime)
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(m_window->getWindow(), true);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_G) == GLFW_PRESS)
-        m_graphics->getCamera()->changeGamemode(SPECTATOR);
+        m_graphics->getCamera()->changeGamemode(DEV);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_H) == GLFW_PRESS)
         m_graphics->getCamera()->changeGamemode(EXPLORATION);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_J) == GLFW_PRESS)

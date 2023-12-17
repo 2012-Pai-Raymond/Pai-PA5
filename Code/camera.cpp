@@ -171,22 +171,20 @@ void Camera::setGear(Speedmodes changeTo) {
 
 void Camera::changeGamemode(Gamemodes gc) {
     switch (gc) {
-        case SPECTATOR:
-            gamemodeType = SPECTATOR;
-            std::cout << "SPECTATOR" << std::endl;
+        case DEV:
+            gamemodeType = DEV;
+            MovementSpeed = 100;
             break;
         case EXPLORATION:
             gamemodeType = EXPLORATION;
-            std::cout << "EXPLORATION" << std::endl;
+            MovementSpeed = SPEED;
             break;
         case OBSERVATION:
             gamemodeType = OBSERVATION;
-            std::cout << "OBSERVATION" << std::endl;
+            MovementSpeed = SPEED;
             break;
         default:
-            std::cout << "Invalid type" << std::endl;
+            std::cout << "Invalid type specified" << std::endl;
             break;
     }
-
-    //std::cout << "Mode: " << gamemodeType << std::endl;
 }
