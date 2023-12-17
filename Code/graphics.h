@@ -41,6 +41,7 @@ private:
 
     stack<glm::mat4> modelStack;
     glm::mat4 shipTransform;
+    bool firstBoot = true;
 
     Camera* m_camera;
     Shader* m_shader;

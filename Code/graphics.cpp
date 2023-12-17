@@ -169,9 +169,9 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		m_sphere->Update(localTransform);
 
 	// Spaceship
-	if (m_camera->gamemodeType == EXPLORATION) // If we're in exploration mode, put the ship in front of the camera
+	if (m_camera->getGamemode() == EXPLORATION || firstBoot) // If we're in exploration mode, put the ship in front of the camera
 	{
-		std::cout << "Code Running" << std::endl;
+		firstBoot = false;
 		scale = { .01,.01,.01 };
 		glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
 		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
@@ -190,8 +190,13 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		}
 		shipTransform = localTransform;
 	}
-	else { // Otherwise, save the current ship position and then don't keep moving it.
-		std::cout << "Code NOT Running" << std::endl;
+	else if (m_camera->getGamemode() == OBSERVATION) { // Save ship position and stop rendering it
+		// Implement Functionality
+	}
+	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship
+		if (m_mesh != NULL) {
+			m_mesh->Update(shipTransform);
+		}
 	}
 
 
