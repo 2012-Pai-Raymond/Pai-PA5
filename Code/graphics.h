@@ -44,8 +44,6 @@ public:
     Mesh* getSpaceship() { return m_mesh; }
 
     void toggleObservedPlanet();
-    void resetPosition();
-
 private:
     std::string ErrorString(GLenum error);
 
@@ -62,7 +60,6 @@ private:
 
     bool firstBoot = true;
     ObservedPlanet currentPlanet = SUN;
-    glm::vec3 cameraPosInExplor;
 
     Camera* m_camera;
     Shader* m_shader;

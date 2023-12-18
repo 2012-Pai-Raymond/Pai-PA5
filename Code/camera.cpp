@@ -187,6 +187,8 @@ void Camera::toggleGamemode() {
         gamemodeType = EXPLORATION;
         MovementSpeed = SPEED;
         resetCameraPos();
+        resetPitch();
+        resetYaw();
         addPosition(-cameraMoveOffset);
     }
 }
