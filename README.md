@@ -16,6 +16,8 @@ L - Speed speed to high value
 #### Gamemode Selection
 G - Toggle between Exploration & Observation mode
 
+V - Toggle between observed planet in Observation mode
+
 H - Toggle Dev mode
 
 ESC - Quit application
