@@ -209,3 +209,7 @@ void Camera::boosting(bool willBoost) {
 void Camera::addPosition(glm::vec3 pos) {
     Position += pos;
 }
+
+void Camera::setPosition(glm::vec3 pos) {
+    Position = pos;
+}

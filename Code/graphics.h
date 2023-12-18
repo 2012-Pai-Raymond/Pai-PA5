@@ -18,6 +18,18 @@ using namespace std;
 #define numVBOs 2;
 #define numIBs 2;
 
+enum ObservedPlanet {
+    SUN,
+    MERCURY,
+    VENUS,
+    EARTH,
+    MARS,
+    JUPITER,
+    SATURN,
+    URANUS,
+    NEPTUNE,
+    STATE_COUNT
+}; // sorry pluto, you didn't make the cut
 
 class Graphics
 {
@@ -31,6 +43,8 @@ public:
     Camera* getCamera() { return m_camera; }
     Mesh* getSpaceship() { return m_mesh; }
 
+    void toggleObservedPlanet();
+
 private:
     std::string ErrorString(GLenum error);
 
@@ -39,9 +53,15 @@ private:
         std::vector<float> rotSpeed, glm::vec3 rotVector, std::vector<float> scale,
         glm::mat4& tmat, glm::mat4& rmat, glm::mat4& smat);
 
+    glm::vec3 addOffsetToPlanetPosition();
+
     stack<glm::mat4> modelStack;
+    glm::vec3 planetPositions[STATE_COUNT]; // Will store the position of the the planets (X,Y,Z) so that we can later get the camera to follow them
     glm::mat4 shipTransform;
+
     bool firstBoot = true;
+    ObservedPlanet currentPlanet = SUN;
+    glm::vec3 cameraPosInExplor;
 
     Camera* m_camera;
     Shader* m_shader;

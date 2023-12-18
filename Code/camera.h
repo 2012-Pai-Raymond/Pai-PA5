@@ -72,6 +72,7 @@ public:
 
     glm::vec3 getPosition() { return Position; }
     void addPosition(glm::vec3 pos);
+    void setPosition(glm::vec3 pos);
     glm::vec3 getFront() { return Front;  }
     float getYaw() { return Yaw; }
     float getPitch() { return Pitch; }
