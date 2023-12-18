@@ -419,7 +419,10 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0));  // Yeah, i should just pop the stack until I get to the sun but no thanks
 	localTransform = modelStack.top();
 	if (m_camera->getGamemode() == EXPLORATION || firstBoot) { // If we're in exploration mode, put the ship in front of the camera
-		firstBoot = false;
+		if (firstBoot) {
+			firstBoot = false;
+			cameraPosInExplor = m_camera->getPosition();
+		}
 
 		glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
 		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
@@ -436,7 +439,8 @@ void Graphics::HierarchicalUpdate2(double dt) {
 			m_mesh->Update(localTransform);
 		}
 		shipTransform = localTransform;
-		cameraPosInExplor = m_camera->getPosition();
+		//cameraPosInExplor = m_camera->getPosition();
+		m_camera->setCameraPosInExplor();
 	}
 	else if (m_camera->getGamemode() == OBSERVATION) { // Save ship position and stop rendering it
 		glm::vec3 offsetFromCamera = { 0, -0.2f, -0.5f }; // z cord moves ship forward
@@ -1351,4 +1355,8 @@ glm::vec3 Graphics::addOffsetToPlanetPosition() {
 	else if (currentPlanet == NEPTUNE)
 		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
 	return planetPos;
+}
+
+void Graphics::resetPosition() {
+	m_camera->setPosition(cameraPosInExplor);
 }

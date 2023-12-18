@@ -183,9 +183,10 @@ void Camera::toggleGamemode() {
         MovementSpeed = SPEED;
         addPosition(cameraMoveOffset);
     }
-    else if (gamemodeType == OBSERVATION) { // Set to 
+    else if (gamemodeType == OBSERVATION) { // Set to Exploration (dev mode normally inaccessible)
         gamemodeType = EXPLORATION;
         MovementSpeed = SPEED;
+        resetCameraPos();
         addPosition(-cameraMoveOffset);
     }
 }

@@ -44,6 +44,7 @@ public:
     Mesh* getSpaceship() { return m_mesh; }
 
     void toggleObservedPlanet();
+    void resetPosition();
 
 private:
     std::string ErrorString(GLenum error);
