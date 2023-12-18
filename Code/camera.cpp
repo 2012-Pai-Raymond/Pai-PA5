@@ -23,6 +23,7 @@ Camera::~Camera()
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
+    if (gamemodeType == OBSERVATION) return;
     float velocity = MovementSpeed * deltaTime;
     if (isBoosting) velocity = boostSpeed * deltaTime;
 
