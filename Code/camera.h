@@ -70,14 +70,21 @@ public:
 
     void Update();
 
+    glm::vec3 getFront() { return Front; }
+
     glm::vec3 getPosition() { return Position; }
     void addPosition(glm::vec3 pos);
     void setPosition(glm::vec3 pos);
-    glm::vec3 getFront() { return Front;  }
+
     float getYaw() { return Yaw; }
     float getPitch() { return Pitch; }
+
     void setCameraPosInExplor() { cameraPosInExplor = Position;  }
     void resetCameraPos() { Position = cameraPosInExplor;  }
+    void setYawInExplor() { YawInExplor = Yaw; }
+    void resetYaw() { Yaw = YawInExplor; }
+    void setPitchInExplor() { PitchInExplor = Pitch; }
+    void resetPitch() { Pitch = PitchInExplor; }
 private:
     glm::mat4 projection;
     glm::mat4 view;
@@ -85,6 +92,8 @@ private:
     glm::mat4 localTransform = glm::mat4(1.0f);
 
     glm::vec3 cameraPosInExplor;
+    float YawInExplor;
+    float PitchInExplor;
 
     float boostSpeed;
     bool isBoosting = false;
