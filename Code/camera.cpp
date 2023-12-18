@@ -183,9 +183,10 @@ void Camera::toggleGamemode() {
         MovementSpeed = SPEED;
         addPosition(cameraMoveOffset);
     }
-    else if (gamemodeType == OBSERVATION) { // Set to 
+    else if (gamemodeType == OBSERVATION) { // Set to Exploration (dev mode normally inaccessible)
         gamemodeType = EXPLORATION;
         MovementSpeed = SPEED;
+        resetCameraPos();
         addPosition(-cameraMoveOffset);
     }
 }
@@ -208,4 +209,8 @@ void Camera::boosting(bool willBoost) {
 
 void Camera::addPosition(glm::vec3 pos) {
     Position += pos;
+}
+
+void Camera::setPosition(glm::vec3 pos) {
+    Position = pos;
 }

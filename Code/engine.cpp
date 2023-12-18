@@ -221,4 +221,6 @@ void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action,
 {
     if (key == GLFW_KEY_G && action == GLFW_PRESS)
         m_graphics->getCamera()->toggleGamemode();
+    if (key == GLFW_KEY_V && action == GLFW_PRESS)
+        m_graphics->toggleObservedPlanet();
 }

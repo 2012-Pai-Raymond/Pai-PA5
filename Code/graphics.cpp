@@ -176,56 +176,11 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	// position of the sun	
 	modelStack.push(glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0)));  // sun's coordinate
 	localTransform = modelStack.top();		// The sun origin
+	planetPositions[0] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	localTransform *= glm::rotate(glm::mat4(1.0f), (float)dt, glm::vec3(0.f, 1.f, 0.f));
 	localTransform *= glm::scale(glm::vec3(10., 10., 10.));
 	if (m_sphere != NULL)
 		m_sphere->Update(localTransform);
-
-	// Spaceship
-	scale = { .01,.01,.01 };
-	glm::vec3 cameraMoveOffset = { 0, -1.1f, -0.5f };
-	localTransform = modelStack.top(); // start with sun's position
-	if (m_camera->getGamemode() == EXPLORATION || firstBoot) { // If we're in exploration mode, put the ship in front of the camera
-		firstBoot = false;
-
-		glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
-		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
-
-		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
-		// Rotations
-		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
-		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
-		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
-		// Offset from camera
-		localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
-		localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
-		if (m_mesh != NULL) {
-			m_mesh->Update(localTransform);
-		}
-		shipTransform = localTransform;
-	}
-	else if (m_camera->getGamemode() == OBSERVATION) { // Save ship position and stop rendering it
-		glm::vec3 offsetFromCamera = { 0, -0.2f, -0.5f }; // z cord moves ship forward
-		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
-
-		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
-		// Rotations
-		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
-		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
-		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
-		// Offset from camera
-		localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
-		localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
-		if (m_mesh != NULL) {
-			m_mesh->Update(localTransform);
-		}
-	}
-	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship)
-		if (m_mesh != NULL) {
-			m_mesh->Update(shipTransform);
-		}
-	}
-
 
 	//position of Haley's comet
 	speed = { .2f, .2f, .2f };
@@ -250,6 +205,11 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[1] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
+	// Print the translation matrix
+	//for (int i = 0; i < 4; i++) {
+		//std::cout << localTransform[i][0] << " " << localTransform[i][1] << " " << localTransform[i][2] << " " << localTransform[i][3] << std::endl;
+	//}
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (Mercury != NULL)
@@ -265,6 +225,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[2] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	glm::rotate(glm::mat4(1.f), glm::radians(177.4f), glm::vec3(0.0, 0.0, 1.f));
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
@@ -276,10 +237,11 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	dist = { 90., 0, 90. };
 	rotVector = { 0.,1.,0. };
 	rotSpeed = { 0.3, 0.3, 0.3 };
-	scale = { 2.2, 2. , 2.2};
+	scale = { 2.2, 2. , 2.2 };
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[3] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	modelStack.push(localTransform);
 	glm::rotate(glm::mat4(1.f), glm::radians(23.4f), glm::vec3(0.0, 0.0, 1.f));
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
@@ -290,7 +252,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	// position of the moon
 
 	speed = { 1.f, 1.f, 1.f };
-	dist = { 10., 0., 10.};
+	dist = { 10., 0., 10. };
 	rotVector = { 0.,1.,0. };
 	rotSpeed = { .25, .25, .25 };
 	scale = { .3f, .3f, .3f };
@@ -315,6 +277,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[4] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(25.2f), glm::vec3(0.0, 0.0, 1.f));
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
@@ -346,6 +309,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();				// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[5] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(3.1f), glm::vec3(0.0, 0.0, 1.f));
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
@@ -362,6 +326,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[6] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	modelStack.push(localTransform);
 	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(26.7f), glm::vec3(0.0, 0., 1.));
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
@@ -394,6 +359,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[7] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(97.8f), glm::vec3(0.0, 0., 1.));
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
@@ -409,6 +375,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform = modelStack.top();// start with sun's coordinate
 	localTransform *= glm::translate(glm::mat4(1.f),
 		glm::vec3(cos(speed[0] * dt) * dist[0], sin(speed[1] * dt) * dist[1], sin(speed[2] * dt) * dist[2]));
+	planetPositions[8] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
 	localTransform *= glm::rotate(glm::mat4(1.f), glm::radians(28.3f), glm::vec3(0.0, 0., 1.));
 	localTransform *= glm::rotate(glm::mat4(1.f), rotSpeed[0] * (float)dt, rotVector);
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
@@ -444,6 +411,62 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
 	if (Haumea != NULL)
 		Haumea->Update(localTransform);
+
+	
+	// Spaceship
+	scale = { .01,.01,.01 };
+	glm::vec3 cameraMoveOffset = { 0, -1.1f, -0.5f };
+	localTransform = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0));  // Yeah, i should just pop the stack until I get to the sun but no thanks
+	localTransform = modelStack.top();
+	if (m_camera->getGamemode() == EXPLORATION || firstBoot) { // If we're in exploration mode, put the ship in front of the camera
+		if (firstBoot) {
+			firstBoot = false;
+			cameraPosInExplor = m_camera->getPosition();
+		}
+
+		glm::vec3 offsetFromCamera = { 0, -0.5f, 1.1f }; // z cord moves ship forward
+		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
+
+		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
+		// Rotations
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
+		// Offset from camera
+		localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
+		localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+		if (m_mesh != NULL) {
+			m_mesh->Update(localTransform);
+		}
+		shipTransform = localTransform;
+		//cameraPosInExplor = m_camera->getPosition();
+		m_camera->setCameraPosInExplor();
+	}
+	else if (m_camera->getGamemode() == OBSERVATION) { // Save ship position and stop rendering it
+		glm::vec3 offsetFromCamera = { 0, -0.2f, -0.5f }; // z cord moves ship forward
+		float rotationOffset = 90.0f; // Need to rotate spaceship a bit to make it line up with camera
+		localTransform *= glm::translate(glm::mat4(1.0f), m_camera->getPosition()); // Set position to the camera's
+		// Rotations
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotationOffset), glm::vec3(0.0f, 1.0f, 0.0f)); // face forward
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getYaw()), glm::vec3(0.0f, 1.0f, 0.0f)); // Match Yaw
+		localTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(-m_camera->getPitch() - 10.0f), glm::vec3(1.0f, 0.0f, 0.0f)); // Match Pitch
+		// Offset from camera
+		localTransform *= glm::translate(glm::mat4(1.0f), offsetFromCamera);
+		localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+		if (m_mesh != NULL) {
+			m_mesh->Update(localTransform);
+		}
+
+		glm::vec3 planetPos = addOffsetToPlanetPosition();
+
+		m_camera->setPosition(planetPos);
+
+	}
+	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship)
+		if (m_mesh != NULL) {
+			m_mesh->Update(shipTransform);
+		}
+	}
 
 	modelStack.pop();	// empy stack
 }
@@ -1287,4 +1310,53 @@ std::string Graphics::ErrorString(GLenum error)
 	{
 		return "None";
 	}
+}
+
+void Graphics::toggleObservedPlanet() {
+	// Switch from one value of currentPlanet to the next (remember currentPlanet is an enum)
+	if(currentPlanet == SUN)
+		currentPlanet = MERCURY;
+	else if (currentPlanet == MERCURY)
+		currentPlanet = VENUS;
+	else if (currentPlanet == VENUS)
+		currentPlanet = EARTH;
+	else if (currentPlanet == EARTH)
+		currentPlanet = MARS;
+	else if (currentPlanet == MARS)
+		currentPlanet = JUPITER;
+	else if (currentPlanet == JUPITER)
+		currentPlanet = SATURN;
+	else if (currentPlanet == SATURN)
+		currentPlanet = URANUS;
+	else if (currentPlanet == URANUS)
+		currentPlanet = NEPTUNE;
+	else if (currentPlanet == NEPTUNE)
+		currentPlanet = SUN;
+}
+
+glm::vec3 Graphics::addOffsetToPlanetPosition() {
+	glm::vec3 planetPos = planetPositions[currentPlanet];
+	if (currentPlanet == SUN)
+		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
+	else if (currentPlanet == MERCURY)
+		planetPos = glm::vec3(planetPos[0] + 5, planetPos[1], planetPos[2] + 5);
+	else if (currentPlanet == VENUS)
+		planetPos = glm::vec3(planetPos[0] + 10, planetPos[1], planetPos[2] + 10);
+	else if (currentPlanet == EARTH)
+		planetPos = glm::vec3(planetPos[0] + 10, planetPos[1], planetPos[2] + 10);
+	else if (currentPlanet == MARS)
+		planetPos = glm::vec3(planetPos[0] + 10, planetPos[1], planetPos[2] + 10);
+	else if (currentPlanet == JUPITER)
+		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
+	else if (currentPlanet == SATURN)
+		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
+	else if (currentPlanet == URANUS)
+		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
+	else if (currentPlanet == NEPTUNE)
+		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
+	return planetPos;
+}
+
+void Graphics::resetPosition() {
+	m_camera->setPosition(cameraPosInExplor);
 }
