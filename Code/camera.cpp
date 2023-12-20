@@ -23,10 +23,12 @@ Camera::~Camera()
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
-    if (gamemodeType == OBSERVATION) return;
-    float velocity = MovementSpeed * deltaTime;
-    if (isBoosting) velocity = boostSpeed * deltaTime;
+    if (gamemodeType == OBSERVATION) return; // Disable axis movement in Observation mode, the camera will just observe the planet rotating
+    // 
+    float velocity = MovementSpeed * deltaTime; 
+    if (isBoosting) velocity = boostSpeed * deltaTime; // If we are boosting, use the higher speed
 
+    // Depending on the specififed direction, we'll appropaitely modify the position
     if (direction == FORWARD) {
         Position += Front * velocity;
     }
@@ -99,6 +101,8 @@ bool Camera::Initialize(int w, int h)
     glm::vec3 offsetY = { 0, -5, 0 };
     localTransform = glm::translate(glm::mat4(1.0f), offsetY);
     localTransform *= glm::scale(glm::vec3(scale[0], scale[1], scale[2]));
+    // Honestly not sure what localTransform does here. Might be a feature I axed at some point.
+    // But I'd rather die than remove it and risk breaking something
     
 
     return true;
@@ -142,6 +146,7 @@ void Camera::Update() {
 }
 
 void Camera::changeMovementSpeed(bool incOrDec, float amount, float deltaTime) {
+    // Increase or decrease movement speed depending on the inputs
     amount *= 10;
     float deltaSpeed = amount * deltaTime;
     if (incOrDec) {
@@ -156,6 +161,7 @@ void Camera::changeMovementSpeed(bool incOrDec, float amount, float deltaTime) {
 }
 
 void Camera::setGear(Speedmodes changeTo) {
+    // Proving the correct enum value changes Movement speed to pre-defined values, quicker than using the up/down keys
     switch (changeTo) {
         case BRAKE:
             MovementSpeed = 0;
@@ -163,7 +169,7 @@ void Camera::setGear(Speedmodes changeTo) {
         case NORMAL:
             MovementSpeed = SPEED;
             break;
-        case LUDICROUS:
+        case LUDICROUS: // Yes, this is a spaceballs reference
             MovementSpeed = 200;
             break;
         default:
@@ -173,6 +179,7 @@ void Camera::setGear(Speedmodes changeTo) {
 }
 
 void Camera::toggleGamemode() {
+    // Depending on which mode we are switching into, change the gamemodetype var, reset movement speed, and move the camera slightly
     glm::vec3 cameraMoveOffset = { 0, -1.1f, -0.5f };
     if (gamemodeType == DEV) { // Set to exploration
         gamemodeType = EXPLORATION;
@@ -194,12 +201,12 @@ void Camera::toggleGamemode() {
     }
 }
 
-void Camera::toggleDevMode() {
+void Camera::toggleDevMode() { // Mode used for debugging purposes
     gamemodeType = DEV;
     MovementSpeed = 100;
 }
 
-void Camera::boosting(bool willBoost) {
+void Camera::boosting(bool willBoost) { // If the left shift key is being held down, willBoost will continously remain true, until you let go
     if (willBoost) {
         boostSpeed = MovementSpeed + 100;
         isBoosting = true;

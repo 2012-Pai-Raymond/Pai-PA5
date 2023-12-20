@@ -43,7 +43,7 @@ public:
     Camera* getCamera() { return m_camera; }
     Mesh* getSpaceship() { return m_mesh; }
 
-    void toggleObservedPlanet();
+    void toggleObservedPlanet(); // Cycle between values of currentPlanet
 private:
     std::string ErrorString(GLenum error);
 
@@ -52,14 +52,14 @@ private:
         std::vector<float> rotSpeed, glm::vec3 rotVector, std::vector<float> scale,
         glm::mat4& tmat, glm::mat4& rmat, glm::mat4& smat);
 
-    glm::vec3 addOffsetToPlanetPosition();
+    glm::vec3 addOffsetToPlanetPosition(); // Depending on what planet we are vieiwng, add an appropaite offset from it's center
 
-    stack<glm::mat4> modelStack;
+    stack<glm::mat4> modelStack; // Used to store hierarchical updates
     glm::vec3 planetPositions[STATE_COUNT]; // Will store the position of the the planets (X,Y,Z) so that we can later get the camera to follow them
-    glm::mat4 shipTransform;
+    glm::mat4 shipTransform; // Used to save the transformation applied to ship in case we enter Dev mode
 
-    bool firstBoot = true;
-    ObservedPlanet currentPlanet = SUN;
+    bool firstBoot = true; // In case we don't start the game in Exploration mode, this will make sure some variables are still initialized
+    ObservedPlanet currentPlanet = SUN; // Keeps track of the planet we are currently observing
 
     Camera* m_camera;
     Shader* m_shader;

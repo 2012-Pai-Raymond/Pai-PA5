@@ -45,7 +45,7 @@ public:
     float MouseSensitivity;
     float Zoom;
 
-    Gamemodes gamemodeType = EXPLORATION;
+    Gamemodes gamemodeType = EXPLORATION; // Stores the current gamemode (Exploration, Observation, & Dev)
 
     Camera();
     ~Camera();
@@ -57,28 +57,29 @@ public:
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
     void ProcessMouseScroll(float yoffset);
 
-    void setSpeed(glm::vec3 spd) { m_speed = spd; }
-    void setRotation(float rotSpd) { m_rotSpeed = rotSpd; }
+    void setSpeed(glm::vec3 spd) { m_speed = spd; } // Unused
+    void setRotation(float rotSpd) { m_rotSpeed = rotSpd; } // Unused
 
-    void changeMovementSpeed(bool incOrDec, float amount, float deltaTime);
-    void setGear(Speedmodes changeTo);
-    void boosting(bool willBoost);
+    void changeMovementSpeed(bool incOrDec, float amount, float deltaTime); // Used for moving the camera forward, left/right, backwards (and even up/down)
+    void setGear(Speedmodes changeTo); // Used to set MovementSpeed to some hard coded values (like to zero for braking)
+    void boosting(bool willBoost); // Temporarily increases MovemenetSpeed to create a boost effect
 
-    void toggleGamemode();
-    void toggleDevMode();
-    Gamemodes getGamemode() { return gamemodeType; }
+    void toggleGamemode(); // Cycles from one gamemode to the next (Exp->Obv). Dev mode will cycle to Expo mode but you cannot cycle back
+    void toggleDevMode(); // Enables dev mode explortion (spaceship stops following camera but continues to render where it last was)
+    Gamemodes getGamemode() { return gamemodeType; } // Returns the current gamemode, mainly used by Graphics class
 
     void Update();
 
     glm::vec3 getFront() { return Front; }
 
     glm::vec3 getPosition() { return Position; }
-    void addPosition(glm::vec3 pos);
-    void setPosition(glm::vec3 pos);
+    void addPosition(glm::vec3 pos); // Adds the given position to the camera's current position
+    void setPosition(glm::vec3 pos); // Sets the camera's current positon to the given position
 
     float getYaw() { return Yaw; }
     float getPitch() { return Pitch; }
 
+    // These functions are used to save pos, yaw, & pitch when exiting Exploration mode as well as restoring them when returning to Exp mode.
     void setCameraPosInExplor() { cameraPosInExplor = Position;  }
     void resetCameraPos() { Position = cameraPosInExplor;  }
     void setYawInExplor() { YawInExplor = Yaw; }

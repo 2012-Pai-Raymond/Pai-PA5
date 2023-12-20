@@ -176,7 +176,7 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	// position of the sun	
 	modelStack.push(glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0)));  // sun's coordinate
 	localTransform = modelStack.top();		// The sun origin
-	planetPositions[0] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] };
+	planetPositions[0] = { localTransform[3][0], localTransform[3][1], localTransform[3][2] }; // Store the planet's position (X, Y, Z) to be used later by the camera in Obs mode.
 	localTransform *= glm::rotate(glm::mat4(1.0f), (float)dt, glm::vec3(0.f, 1.f, 0.f));
 	localTransform *= glm::scale(glm::vec3(10., 10., 10.));
 	if (m_sphere != NULL)
@@ -417,9 +417,9 @@ void Graphics::HierarchicalUpdate2(double dt) {
 	scale = { .01,.01,.01 };
 	glm::vec3 cameraMoveOffset = { 0, -1.1f, -0.5f };
 	localTransform = glm::translate(glm::mat4(1.f), glm::vec3(0, 0, 0));  // Yeah, i should just pop the stack until I get to the sun but no thanks
-	localTransform = modelStack.top();
+	localTransform = modelStack.top(); // Okay, I yield. I did use the sun's position on the stack
 	if (m_camera->getGamemode() == EXPLORATION || firstBoot) { // If we're in exploration mode, put the ship in front of the camera
-		if (firstBoot) {
+		if (firstBoot) { // In case we aren't in Exploration mode on boot, we need to still save a pos, yaw & pitch (of the camera) to restore to when entering exploration mode for the first time
 			firstBoot = false;
 			m_camera->setCameraPosInExplor();
 			m_camera->setYawInExplor();
@@ -440,7 +440,8 @@ void Graphics::HierarchicalUpdate2(double dt) {
 		if (m_mesh != NULL) {
 			m_mesh->Update(localTransform);
 		}
-		shipTransform = localTransform;
+		shipTransform = localTransform; // Save ship transformation in case we enter dev mode (ship will remain in place)
+		// Save the pos, yaw, & pitch of the camera in case we leave exp mode so they can be restored later
 		m_camera->setCameraPosInExplor();
 		m_camera->setYawInExplor();
 		m_camera->setPitchInExplor();
@@ -460,14 +461,14 @@ void Graphics::HierarchicalUpdate2(double dt) {
 			m_mesh->Update(localTransform);
 		}
 
-		glm::vec3 planetPos = addOffsetToPlanetPosition();
-
+		glm::vec3 planetPos = addOffsetToPlanetPosition(); // Offset from the planet's position so that we aren't inside it.
+		// Different values for different planets as some planets are bigger than others
 		m_camera->setPosition(planetPos);
 
 	}
 	else { // DEV mode (Sets speed to high value, save ship position, but keep rendering ship)
 		if (m_mesh != NULL) {
-			m_mesh->Update(shipTransform);
+			m_mesh->Update(shipTransform); // used the shipTransformation saved in Exp mode to keep the ship in place
 		}
 	}
 
@@ -1317,7 +1318,8 @@ std::string Graphics::ErrorString(GLenum error)
 
 void Graphics::toggleObservedPlanet() {
 	// Switch from one value of currentPlanet to the next (remember currentPlanet is an enum)
-	if(currentPlanet == SUN)
+	// Used to toggle between the planet that is being observed
+	if(currentPlanet == SUN) // Yes I know the sun isn't a planet but it's just easier to refer to all of these as planets
 		currentPlanet = MERCURY;
 	else if (currentPlanet == MERCURY)
 		currentPlanet = VENUS;
@@ -1338,6 +1340,8 @@ void Graphics::toggleObservedPlanet() {
 }
 
 glm::vec3 Graphics::addOffsetToPlanetPosition() {
+	// Depending on what planet we are set to view, offset from it's center.
+	// The bigger the celestial body, the farther we need to be away (less we end up inside it)
 	glm::vec3 planetPos = planetPositions[currentPlanet];
 	if (currentPlanet == SUN)
 		planetPos = glm::vec3(planetPos[0] + 20, planetPos[1], planetPos[2] + 20);
