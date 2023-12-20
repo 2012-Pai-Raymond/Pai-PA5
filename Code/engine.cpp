@@ -108,6 +108,7 @@ void Engine::ProcessInput(float deltaTime)
         m_graphics->getCamera()->changeMovementSpeed(true, 2, deltaTime);
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS)
         m_graphics->getCamera()->changeMovementSpeed(false, 2, deltaTime);
+    // If (left) shift is held, temporarily increase speed
     if (glfwGetKey(m_window->getWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         m_graphics->getCamera()->boosting(true);
     else
@@ -219,6 +220,8 @@ void Engine::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void Engine::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    // If statement is true only once while a key is pressed.
+    // So this is used for toggable actions such as switching gamemode or the currently observed planet.
     if (key == GLFW_KEY_G && action == GLFW_PRESS)
         m_graphics->getCamera()->toggleGamemode();
     if (key == GLFW_KEY_V && action == GLFW_PRESS)
