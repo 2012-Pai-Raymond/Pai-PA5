@@ -13,12 +13,14 @@ B - Brake
 N - Set speed back to default
 
 L - Speed speed to high value
-#### Gamemode Selection
+#### Gamemode Selection & Viewing
 G - Toggle between Exploration & Observation mode
 
 V - Toggle between observed planet in Observation mode
 
 H - Toggle Dev mode
+
+Scroll Wheel - Zoom in/out
 
 ESC - Quit application
 
