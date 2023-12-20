@@ -33,3 +33,13 @@ ESC - Quit application
     - Fly around in a first person view. Spaceship position saved but not rendered.
 - #### Dev Mode
     - For development purposes. Allows you to move around quickly and keeps rendering the ship in it's last positon. 
+
+### Dependencies
+- [OPENGL](https://www.opengl.org/)
+- [GLFW](https://www.glfw.org/)
+- [GLEW](http://glew.sourceforge.net/)
+- [GLM](https://glm.g-truc.net/0.9.9/index.html)
+- [SOIL2](https://github.com/SpartanJ/SOIL2)
+- [ASSIMP](https://www.assimp.org/)
+
+No additional dependencies were used.
