@@ -1,5 +1,5 @@
 ### Controls
-#### Movement
+#### Space ship Movement
 WASD - Move
 
 Up Key - Speed up
@@ -13,21 +13,23 @@ B - Brake
 N - Set speed back to default
 
 L - Speed speed to high value
-#### Gamemode Selection & Viewing
+#### Camera Movement
+Mouse - Look around
+
+Scroll Wheel - Zoom in/out
+#### Gamemode Selection
 G - Toggle between Exploration & Observation mode
 
 V - Toggle between observed planet in Observation mode
 
 H - Toggle Dev mode
 
-Scroll Wheel - Zoom in/out
-
 ESC - Quit application
 
 ### Gamemodes:
-- #### Dev Mode
-    - For development purposes. Allows you to move around quickly and keeps rendering the ship in it's initial/last positon.
 - #### Exploration Mode
     - Fly around in a thirs person view of the spaceship.
 - #### Observation Mode
     - Fly around in a first person view. Spaceship position saved but not rendered.
+- #### Dev Mode
+    - For development purposes. Allows you to move around quickly and keeps rendering the ship in it's last positon. 
