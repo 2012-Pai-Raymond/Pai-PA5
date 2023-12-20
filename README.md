@@ -42,4 +42,4 @@ ESC - Quit application
 - [SOIL2](https://github.com/SpartanJ/SOIL2)
 - [ASSIMP](https://www.assimp.org/)
 
-No additional dependencies were used.
+No external dependencies (those not required for clas) were used.
